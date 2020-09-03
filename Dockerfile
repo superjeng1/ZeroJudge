@@ -39,6 +39,6 @@ COPY --from=builder /JudgeServer_CONSOLE /JudgeServer_CONSOLE
 #COPY /container-zerojudge-data/ssh/id_rsa.pub /root/.ssh/id_rsa.pub
 #COPY /container-zerojudge-data/ssh/known_hosts /root/.ssh/known_hosts
 
-COPY lxc-attach /bin/lxc-attach
+COPY scripts/lxc-attach /bin/lxc-attach
 
 CMD ["catalina.sh", "run"]
