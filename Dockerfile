@@ -35,10 +35,10 @@ COPY --from=builder /build/mysql-connector-java-5.1.6.jar /usr/local/tomcat/lib
 COPY --from=builder /ZeroJudge_CONSOLE /ZeroJudge_CONSOLE
 COPY --from=builder /JudgeServer_CONSOLE /JudgeServer_CONSOLE
 
-COPY /container-zerojudge-data/ssh/id_rsa /root/.ssh/id_rsa
-COPY /container-zerojudge-data/ssh/id_rsa.pub /root/.ssh/id_rsa.pub
-COPY /container-zerojudge-data/ssh/known_hosts /root/.ssh/known_hosts
+#COPY /container-zerojudge-data/ssh/id_rsa /root/.ssh/id_rsa
+#COPY /container-zerojudge-data/ssh/id_rsa.pub /root/.ssh/id_rsa.pub
+#COPY /container-zerojudge-data/ssh/known_hosts /root/.ssh/known_hosts
 
-COPY /container-zerojudge-data/scripts/lxc-attach /bin/lxc-attach
+COPY lxc-attach /bin/lxc-attach
 
 CMD ["catalina.sh", "run"]
