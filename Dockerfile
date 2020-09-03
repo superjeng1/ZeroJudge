@@ -3,8 +3,6 @@ FROM docker.io/tomcat:8-jdk8-openjdk-slim AS builder
 RUN apt-get update && \
     mkdir -p /usr/share/man/man1 && \
     apt-get install --no-install-recommends ant git python3 sudo g++ wget -y && \
-    apt-get clean && \
-    rm -rf /var/cache/apt/lists && \
     mkdir /build && \
     git clone https://github.com/jiangsir/ZeroJudge.git /build/ZeroJudge && \
     git --git-dir=/build/ZeroJudge/.git --work-tree=/build/ZeroJudge checkout -b branch_3.3 3.3 && \
@@ -19,7 +17,9 @@ RUN apt-get update && \
     find /ZeroJudge_CONSOLE -type d -exec chmod 770 {} \; && \
     chmod -R g+rw /ZeroJudge_CONSOLE/Testdata/ && \
     chmod -R g+rw /ZeroJudge_CONSOLE/Special/ && \
-    wget https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.6/mysql-connector-java-5.1.6.jar -P /build
+    wget https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.6/mysql-connector-java-5.1.6.jar -P /build && \
+    apt-get clean && \
+    rm -rf /var/cache/apt/lists
 
 FROM docker.io/tomcat:8-jdk8-openjdk-slim
 
