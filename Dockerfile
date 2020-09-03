@@ -18,7 +18,7 @@ RUN apt-get update && \
     mv /build/ZeroJudge/ZeroJudge_CONSOLE/ / && \
     find /ZeroJudge_CONSOLE -type d -exec chmod 770 {} \; && \
     chmod -R g+rw /ZeroJudge_CONSOLE/Testdata/ && \
-    chmod -R g+rw /ZeroJudge_CONSOLE/Special/
+    chmod -R g+rw /ZeroJudge_CONSOLE/Special/ && \
     wget https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.6/mysql-connector-java-5.1.6.jar -P /build
 
 FROM docker.io/tomcat:8-jdk8-openjdk-slim
