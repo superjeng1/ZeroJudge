@@ -19,7 +19,7 @@ RUN apt-get update && \
     chmod -R g+rw /ZeroJudge_CONSOLE/Special/ && \
     wget https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.6/mysql-connector-java-5.1.6.jar -P /build && \
     apt-get clean && \
-    rm -rf /var/cache/apt/lists
+    rm -rf /var/lib/apt/lists/*
 
 FROM docker.io/tomcat:8-jdk8-openjdk-slim
 
@@ -27,7 +27,7 @@ RUN useradd -u 1002 zero && \
     apt-get update && \
     apt-get install --no-install-recommends sudo ssh dos2unix rsync python3-bs4 -y && \
     apt-get clean && \
-    rm -rf /var/cache/apt/lists
+    rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder /build/ZeroJudge/ROOT.war /usr/local/tomcat/webapps
 COPY --from=builder /build/ZeroJudge_Server/ZeroJudge_Server.war /usr/local/tomcat/webapps
