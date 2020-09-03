@@ -29,11 +29,11 @@ RUN useradd -u 1002 zero && \
     apt-get clean && \
     rm -rf /var/cache/apt/lists
 
-COPY --from builder /build/ZeroJudge/ROOT.war /usr/local/tomcat/webapps
-COPY --from builder /build/ZeroJudge_Server/ZeroJudge_Server.war /usr/local/tomcat/webapps
-COPY --from builder /build/mysql-connector-java-5.1.6.jar /usr/local/tomcat/lib
-COPY --from builder /ZeroJudge_CONSOLE /ZeroJudge_CONSOLE
-COPY --from builder /JudgeServer_CONSOLE /JudgeServer_CONSOLE
+COPY --from=builder /build/ZeroJudge/ROOT.war /usr/local/tomcat/webapps
+COPY --from=builder /build/ZeroJudge_Server/ZeroJudge_Server.war /usr/local/tomcat/webapps
+COPY --from=builder /build/mysql-connector-java-5.1.6.jar /usr/local/tomcat/lib
+COPY --from=builder /ZeroJudge_CONSOLE /ZeroJudge_CONSOLE
+COPY --from=builder /JudgeServer_CONSOLE /JudgeServer_CONSOLE
 
 COPY /container-zerojudge-data/ssh/id_rsa /root/.ssh/id_rsa
 COPY /container-zerojudge-data/ssh/id_rsa.pub /root/.ssh/id_rsa.pub
