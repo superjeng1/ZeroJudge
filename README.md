@@ -4,7 +4,8 @@ This is a Taiwanese online judge made into an Docker Image, which would then be 
 中文說明尚未完成 (Chinese Version of this readme is still in the works)
 
 ## Installation
-1. Download the lxc container from my Google Drive [here](https://drive.google.com/file/d/1UVMDmFYb12o8kzIQDFSzO6etXNUWSsHZ/view?usp=sharing). If you aren't comfortable downloading it from my drive and prefer to download from the orignal author himself, go to [his repository](https://github.com/jiangsir/ZeroJudge) and click on the link `請先下載 ZeroJudge虛擬機` then extract the `/var/lib/lxc/lxc-ALL/` folder within the virtual machine.
+1. Download the lxc container from my Google Drive [here](https://drive.google.com/file/d/1UVMDmFYb12o8kzIQDFSzO6etXNUWSsHZ/view?usp=sharing).
+    * If you aren't comfortable downloading it from my drive and prefer to download from the orignal author himself, go to [his repository](https://github.com/jiangsir/ZeroJudge) and click on the link `請先下載 ZeroJudge虛擬機` then extract the `/var/lib/lxc/lxc-ALL/` folder within the virtual machine.
 
 2. Install `lxc` on your system. 
    * Ubuntu/Debian: `apt-get install lxc`
@@ -18,8 +19,8 @@ mkdir /container-zerojudge-data/configs
 mkdir /container-zerojudge-data/ssh
 ```
 
-3. Download the default `ServerConfig.xml` from the `configs` folder in this repository, or [here](https://raw.githubusercontent.com/superjeng1/ZeroJudge/master/configs/ServerConfig.xml). Make sure to put it in the `configs` folder created in the above step. And modify the settings if needed.
-    * Note: This is the config for the judge itself, not the web interface.
+3. Do a `git clone https://github.com/superjeng1/ZeroJudge.git` and copy `ZeroJudge_CONSOLE` folder and `configs/ServerConfig.xml` file to `/container-zerojudge-data/ZeroJudge_CONSOLE` and `/container-zerojudge-data/configs/ServerConfig.xml` respectively. And then remove the git folder if you wish.
+    * Note: This config file is for the judge itself, not the web interface.
 
 4. Generate an SSH keypair for the container for it to control the lxc container on the host. Also mark the key authorised in the host.
 ```sh
