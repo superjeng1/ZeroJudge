@@ -33,7 +33,7 @@ EOF
 
 if [ ! -z ${REVERSE_PROXY_IP+x} ]; then
 cat << EOF >> /usr/local/tomcat/webapps/ROOT/META-INF/context.xml
-<Valve className="org.apache.catalina.valves.RemoteIpValve" internalProxies="$(printf '%q' "$REVERSE_PROXY_IP")" remoteIpHeader="x-forwarded-for" proxiesHeader="x-forwarded-by" trustedProxies="$REVERSE_PROXY_IP" />
+<Valve className="org.apache.catalina.valves.RemoteIpValve" internalProxies="$(printf '%q' "${REVERSE_PROXY_IP//./\\.}")" remoteIpHeader="x-forwarded-for" proxiesHeader="x-forwarded-by" trustedProxies="$REVERSE_PROXY_IP" />
 EOF
 fi
 
@@ -54,7 +54,7 @@ EOF
 
 if [ ! -z ${REVERSE_PROXY_IP+x} ]; then
 cat << EOF >> /usr/local/tomcat/webapps/ZeroJudge_Server/META-INF/context.xml
-<Valve className="org.apache.catalina.valves.RemoteIpValve" internalProxies="$(printf '%q' "$REVERSE_PROXY_IP")" remoteIpHeader="x-forwarded-for" proxiesHeader="x-forwarded-by" trustedProxies="$REVERSE_PROXY_IP" />
+<Valve className="org.apache.catalina.valves.RemoteIpValve" internalProxies="$(printf "${REVERSE_PROXY_IP//./\\.}")" remoteIpHeader="x-forwarded-for" proxiesHeader="x-forwarded-by" trustedProxies="$REVERSE_PROXY_IP" />
 EOF
 fi
 
