@@ -46,9 +46,9 @@ COPY --from=builder /build/mysql-connector-java-5.1.6.jar /usr/local/tomcat/lib
 COPY --from=builder /JudgeServer_CONSOLE /JudgeServer_CONSOLE
 COPY scripts/init.sh /bin
 
-RUN ${TOMCAT_HOME}/catalina.sh start && \
+RUN ${TOMCAT_HOME}/bin/catalina.sh start && \
     sleep 10 && \
-    ${TOMCAT_HOME}/catalina.sh stop && \
+    ${TOMCAT_HOME}/bin/catalina.sh stop && \
     ln -sf /etc/zerojudge/ssh /root/.ssh && \
     ln -sf /etc/zerojudge/configs/ServerConfig.xml /usr/local/tomcat/webapps/ZeroJudge_Server/WEB-INF/ServerConfig.xml && \
     chmod 755 /bin/init.sh
