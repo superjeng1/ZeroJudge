@@ -1,3 +1,0 @@
-#!/bin/bash
-ssh 172.30.0.1 lxc-attach "$(printf ' %q ' "$@")"
-

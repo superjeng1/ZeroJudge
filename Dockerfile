@@ -19,26 +19,28 @@ RUN apt-get update && \
     chmod -R g+rw /ZeroJudge_CONSOLE/Special/ && \
     wget https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.6/mysql-connector-java-5.1.6.jar -P /build && \
     apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/* && \
+    mkdir /build/wars && \
+    mv /build/ZeroJudge/ROOT.war /build/wars && \
+    mv /build/ZeroJudge_Server/ZeroJudge_Server.war /build/wars
 
 FROM docker.io/tomcat:8-jdk8-openjdk-slim
+
+COPY --from=builder /build/wars /usr/local/tomcat/webapps/
+COPY --from=builder /build/mysql-connector-java-5.1.6.jar /usr/local/tomcat/lib
+COPY --from=builder /JudgeServer_CONSOLE /JudgeServer_CONSOLE
+COPY scripts/init.sh /bin
 
 RUN useradd -u 1002 zero && \
     apt-get update && \
     apt-get install --no-install-recommends sudo ssh dos2unix rsync python3-bs4 -y && \
     apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/* && \
+    catalina.sh start && \
+    while [ ! -f "/usr/local/tomcat/webapps/ROOT/META-INF/context.xml" ] && [ ! -f "/usr/local/tomcat/webapps/ZeroJudge_Server/META-INF/context.xml" ]; do sleep 0.2; done && \
+    catalina.sh stop && \
+    ln -sf /etc/zerojudge/ssh /root/.ssh && \
+    ln -sf /etc/zerojudge/context/ROOT.xml /usr/local/tomcat/webapps/ROOT/META-INF/context.xml && \
+    ln -sf /etc/zerojudge/context/ZeroJudge_Server.xml /usr/local/tomcat/webapps/ZeroJudge_Server/META-INF/context.xml
 
-COPY --from=builder /build/ZeroJudge/ROOT.war /usr/local/tomcat/webapps
-COPY --from=builder /build/ZeroJudge_Server/ZeroJudge_Server.war /usr/local/tomcat/webapps
-COPY --from=builder /build/mysql-connector-java-5.1.6.jar /usr/local/tomcat/lib
-COPY --from=builder /ZeroJudge_CONSOLE /ZeroJudge_CONSOLE
-COPY --from=builder /JudgeServer_CONSOLE /JudgeServer_CONSOLE
-
-#COPY /container-zerojudge-data/ssh/id_rsa /root/.ssh/id_rsa
-#COPY /container-zerojudge-data/ssh/id_rsa.pub /root/.ssh/id_rsa.pub
-#COPY /container-zerojudge-data/ssh/known_hosts /root/.ssh/known_hosts
-
-COPY scripts/lxc-attach /bin/lxc-attach
-
-CMD ["catalina.sh", "run"]
+CMD ["init.sh"]
