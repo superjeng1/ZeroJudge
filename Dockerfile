@@ -42,6 +42,7 @@ RUN useradd -u 1002 zero && \
     catalina.sh stop && \
     ln -sf /etc/zerojudge/ssh /root/.ssh && \
     ln -sf /etc/zerojudge/context/ROOT.xml /usr/local/tomcat/webapps/ROOT/META-INF/context.xml && \
-    ln -sf /etc/zerojudge/context/ZeroJudge_Server.xml /usr/local/tomcat/webapps/ZeroJudge_Server/META-INF/context.xml
+    ln -sf /etc/zerojudge/context/ZeroJudge_Server.xml /usr/local/tomcat/webapps/ZeroJudge_Server/META-INF/context.xml && \
+    chmod 755 /bin/init.sh
 
 CMD ["init.sh"]
