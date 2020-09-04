@@ -5,7 +5,12 @@ fi
 if [ -z ${SSH_USER+x} ]; then
   SSH_USER="root"
 fi
-ssh-keyscan -H $SSH_HOST >> ~/.ssh/known_hosts
+if [ -z ${TOMCAT_SSL_ENABLED+x} ]; then
+  cp -n /usr/local/tomcat/webapps/ROOT/WEB-INF/web_http.xml /usr/local/tomcat/webapps/ROOT/WEB-INF/web.xml
+else
+  cp -n /usr/local/tomcat/webapps/ROOT/WEB-INF/web_https.xml /usr/local/tomcat/webapps/ROOT/WEB-INF/web.xml
+fi
+ssh-keyscan -H $SSH_HOST > ~/.ssh/known_hosts
 
 cat << EOF > /bin/lxc-attach
 #!/bin/bash

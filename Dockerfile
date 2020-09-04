@@ -33,7 +33,7 @@ COPY scripts/init.sh /bin
 
 RUN useradd -u 1002 zero && \
     apt-get update && \
-    apt-get install --no-install-recommends sudo ssh dos2unix rsync python3-bs4 -y && \
+    apt-get install --no-install-recommends sudo ssh dos2unix rsync python3-bs4 iproute2 -y && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     catalina.sh start && \
