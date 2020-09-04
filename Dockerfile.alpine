@@ -32,7 +32,7 @@ ENV TOMCAT_MAJOR=8 \
     CATALINA_HOME=/usr/local/tomcat \
     CATALINA_OUT=/dev/null
 
-RUN useradd -u 1002 zero && \
+RUN adduser --system --no-create-home --disabled-password --shell=/sbin/nologin -u 1002 zero && \
     apk add --no-cache curl sudo openssh dos2unix rsync python3 && \
     curl -jksSL -o /tmp/apache-tomcat.tar.gz http://archive.apache.org/dist/tomcat/tomcat-${TOMCAT_MAJOR}/v${TOMCAT_VERSION}/bin/apache-tomcat-${TOMCAT_VERSION}.tar.gz && \
     tar -C /tmp -zxf /tmp/apache-tomcat.tar.gz && \
