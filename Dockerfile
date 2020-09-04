@@ -38,7 +38,7 @@ RUN useradd -u 1002 zero && \
     rm -rf /var/lib/apt/lists/* && \
     catalina.sh start && \
     #while [ ! -f "/usr/local/tomcat/webapps/ROOT/META-INF/context.xml" ] && [ ! -f "/usr/local/tomcat/webapps/ZeroJudge_Server/META-INF/context.xml" ]; do sleep 0.2; done && \
-    sleep 5 && \
+    sleep 10 && \
     catalina.sh stop && \
     ln -sf /etc/zerojudge/ssh /root/.ssh && \
     ln -sf /etc/zerojudge/context/ROOT.xml /usr/local/tomcat/webapps/ROOT/META-INF/context.xml && \
