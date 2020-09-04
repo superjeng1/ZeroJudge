@@ -37,7 +37,9 @@ chmod -R 770 /container-zerojudge-data/configs
 chmod -R 700 /container-zerojudge-data/ssh
 ```
 
-6. Pull the docker image and mount some volumes from the host for persistent storage and the configuration file:
+6. MySQL Database (I am still working on a empty SQL dump, check back later! Sorry for the inconvenience!)
+
+7. Pull the docker image and mount some volumes from the host for persistent storage and the configuration file:
 ```sh
 docker pull superjeng1/zerojudge:latest
 docker run --name zerojudge \
@@ -56,7 +58,7 @@ docker run --name zerojudge \
 * Note: Make sure to put yourown MySql Settings in the quotes `''`. And make sure you don't leave the brackets `<>` in-place.
 * For REVERSE PROXY USERS: Add the environment varible `REVERSE_PROXY_IP` with `-e REVERSE_PROXY_IP='<REVERSE_PROXY_IP>'` to make sure tomcat grabs the correct client IP.
 
-7. Connect to your ZeroJudge with the container's IP and the port `8080`. To verify the container is working as intended, try to login with the default credentials listed below. Then go to the `Submissions` tab and re-run the submissions to make sure the judge is working properly.
+8. Connect to your ZeroJudge with the container's IP and the port `8080`. To verify the container is working as intended, try to login with the default credentials listed below. Then go to the `Submissions` tab and re-run the submissions to make sure the judge is working properly.
 ```
 Account: zero
 Password: !@#$zerojudge
