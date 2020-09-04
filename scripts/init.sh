@@ -45,7 +45,7 @@ cat << EOF >> /usr/local/tomcat/webapps/ROOT/META-INF/context.xml
 </Context>
 EOF
 
-cat << EOF >> /usr/local/tomcat/webapps/ZeroJudge_Server/META-INF/context.xml
+cat << EOF > /usr/local/tomcat/webapps/ZeroJudge_Server/META-INF/context.xml
 <?xml version="1.0" encoding="UTF-8"?>
 <Context docBase="ZeroJudge_Server">
 <!-- 	<Valve className="org.apache.catalina.valves.RemoteAddrValve" allow="127.0.0.1|163.32.92.12|163.32.92.3" />
@@ -56,6 +56,7 @@ if [ ! -z ${REVERSE_PROXY_IP+x} ]; then
 cat << EOF >> /usr/local/tomcat/webapps/ZeroJudge_Server/META-INF/context.xml
 <Valve className="org.apache.catalina.valves.RemoteIpValve" internalProxies="$(printf '%q' "$REVERSE_PROXY_IP")" remoteIpHeader="x-forwarded-for" proxiesHeader="x-forwarded-by" trustedProxies="$REVERSE_PROXY_IP" />
 EOF
+fi
 
 cat << EOF >> /usr/local/tomcat/webapps/ZeroJudge_Server/META-INF/context.xml
 </Context>
