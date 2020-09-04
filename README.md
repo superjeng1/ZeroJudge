@@ -56,7 +56,11 @@ docker run --name zerojudge \
 * Note: Make sure to put yourown MySql Settings in the quotes `''`. And make sure you don't leave the brackets `<>` in-place.
 * For REVERSE PROXY USERS: Add the environment varible `REVERSE_PROXY_IP` with `-e REVERSE_PROXY_IP='<REVERSE_PROXY_IP>'` to make sure tomcat grabs the correct client IP.
 
-7. Connect to your ZeroJudge with the container's IP and the port `8080`.
+7. Connect to your ZeroJudge with the container's IP and the port `8080`. To verify the container is working as intended, try to login with the default credentials listed below. Then go to the `Submissions` tab and re-run the submissions to make sure the judge is working properly.
+```
+Account: zero
+Password: !@#$zerojudge
+```
 
 ## Get in touch
 If you have any questions or you encountered any problem when setting this up, feel free to open up an issue and I will make sure I would take a look at it.
