@@ -25,7 +25,7 @@ RUN apt-get update && \
     mv /build/ZeroJudge_Server/ZeroJudge_Server.war /build/wars
 
 
-FROM docker.io/openjdk:16-jdk-alpine AS deployer
+FROM docker.io/openjdk:8-jre-alpine AS deployer
 
 ENV TOMCAT_MAJOR=8 \
     TOMCAT_VERSION=8.5.57 \
@@ -59,7 +59,7 @@ ENV TOMCAT_MAJOR=8 \
     CATALINA_OUT=/dev/null
 
 RUN adduser --system --no-create-home --disabled-password --shell=/sbin/nologin -u 1002 zero && \
-    apk add --no-cache curl sudo openssh dos2unix rsync python3 && \
+    apk add --no-cache curl sudo openssh dos2unix rsync python3 bash && \
     curl -jksSL -o /tmp/apache-tomcat.tar.gz http://archive.apache.org/dist/tomcat/tomcat-${TOMCAT_MAJOR}/v${TOMCAT_VERSION}/bin/apache-tomcat-${TOMCAT_VERSION}.tar.gz && \
     tar -C /tmp -zxf /tmp/apache-tomcat.tar.gz && \
     mv /tmp/apache-tomcat-${TOMCAT_VERSION} ${TOMCAT_HOME} && \
@@ -76,4 +76,4 @@ RUN ln -sf /etc/zerojudge/ssh /root/.ssh && \
     ln -sf /etc/zerojudge/configs/ServerConfig.xml /usr/local/tomcat/webapps/ZeroJudge_Server/WEB-INF/ServerConfig.xml && \
     chmod 755 /bin/init.sh
 
-CMD ["init.sh"]
+CMD ["/bin""init.sh"]
