@@ -76,4 +76,4 @@ RUN ln -sf /etc/zerojudge/ssh /root/.ssh && \
     ln -sf /etc/zerojudge/configs/ServerConfig.xml /usr/local/tomcat/webapps/ZeroJudge_Server/WEB-INF/ServerConfig.xml && \
     chmod 755 /bin/init.sh
 
-CMD ["/bin""init.sh"]
+CMD ["/bin/init.sh"]
