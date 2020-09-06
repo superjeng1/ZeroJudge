@@ -39,10 +39,12 @@ RUN apk add --no-cache curl && \
     mv /tmp/apache-tomcat-${TOMCAT_VERSION} ${TOMCAT_HOME} && \
     rm -rf /tmp/* && \
     rm -rf ${TOMCAT_HOME}/webapps/* && \
+    curl https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.6/mysql-connector-java-5.1.6.jar -o ${TOMCAT_HOME}/lib/mysql-connector-java-5.1.6.jar && \
     apk del curl
 
 COPY --from=builder /build/wars /usr/local/tomcat/webapps/
 COPY --from=builder /build/mysql-connector-java-5.1.6.jar /usr/local/tomcat/lib
+COPY scripts/zerojudge-init.sh /usr/local/tomcat/bin
 
 RUN ${TOMCAT_HOME}/bin/catalina.sh start && \
     sleep 10 && \
@@ -60,22 +62,13 @@ ENV TOMCAT_MAJOR=8 \
     JAVA_HOME=/usr/lib/jvm/java-1.8-openjdk/jre \
     PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/lib/jvm/java-1.8-openjdk/jre/bin:/usr/lib/jvm/java-1.8-openjdk/bin:/usr/local/tomcat/bin
 
-RUN adduser --system --no-create-home --disabled-password --shell=/sbin/nologin -u 1002 zero && \
-    apk add --no-cache openjdk8-jre curl sudo openssh-client dos2unix rsync python3 && \
-    curl -jksSL -o /tmp/apache-tomcat.tar.gz http://archive.apache.org/dist/tomcat/tomcat-${TOMCAT_MAJOR}/v${TOMCAT_VERSION}/bin/apache-tomcat-${TOMCAT_VERSION}.tar.gz && \
-    tar -C /tmp -zxf /tmp/apache-tomcat.tar.gz && \
-    mv /tmp/apache-tomcat-${TOMCAT_VERSION} ${TOMCAT_HOME} && \
-    rm -rf /tmp/* && \
-    rm -rf ${TOMCAT_HOME}/webapps/* && \
-    apk del curl
-
-COPY --from=deployer /usr/local/tomcat/webapps /usr/local/tomcat/webapps/
-COPY --from=builder /build/mysql-connector-java-5.1.6.jar /usr/local/tomcat/lib
+COPY --from=deployer /usr/local/tomcat /usr/local/tomcat
 COPY --from=builder /JudgeServer_CONSOLE /JudgeServer_CONSOLE
-COPY scripts/init.sh /bin
 
-RUN ln -sf /etc/zerojudge/ssh /root/.ssh && \
+RUN adduser --system --no-create-home --disabled-password --shell=/sbin/nologin -u 1002 zero && \
+    apk add --no-cache openjdk8-jre sudo openssh-client dos2unix rsync python3 && \
+    ln -sf /etc/zerojudge/ssh /root/.ssh && \
     ln -sf /etc/zerojudge/configs/ServerConfig.xml /usr/local/tomcat/webapps/ZeroJudge_Server/WEB-INF/ServerConfig.xml && \
     chmod 755 /bin/init.sh
 
-CMD ["/bin/init.sh"]
+CMD ["zerojudge-init.sh"]
