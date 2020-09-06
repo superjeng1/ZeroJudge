@@ -13,8 +13,8 @@ fi
 ssh-keyscan -H $SSH_HOST > ~/.ssh/known_hosts
 
 cat << EOF > /bin/lxc-attach
-#!/bin/bash
-ssh $SSH_USER@$SSH_HOST lxc-attach "\$(printf ' %q ' "\$@")"
+#!/bin/sh
+ssh $SSH_USER@$SSH_HOST lxc-attach \$(printf "\\"%s\\" " "\$@")
 EOF
 
 chmod 755 /bin/lxc-attach
