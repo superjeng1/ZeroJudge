@@ -1,8 +1,8 @@
-FROM docker.io/tomcat:8-jdk8-openjdk-slim AS builder
+FROM docker.io/tomcat:9-jdk8-openjdk-slim AS builder
 
 RUN apt-get update && \
     mkdir -p /usr/share/man/man1 && \
-    apt-get install --no-install-recommends ant git python3 sudo g++ wget -y && \
+    apt-get install --no-install-recommends ant git python3 sudo g++ curl -y && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 

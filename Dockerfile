@@ -2,7 +2,7 @@ FROM docker.io/tomcat:9-jdk8-openjdk-slim AS builder
 
 RUN apt-get update && \
     mkdir -p /usr/share/man/man1 && \
-    apt-get install --no-install-recommends ant git python3 sudo g++ wget -y && \
+    apt-get install --no-install-recommends ant git python3 sudo g++ curl -y && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -22,6 +22,8 @@ RUN ant -f /build/ZeroJudge/build.xml clean makewar callpy -Dappname=ROOT -DTOMC
     mkdir /build/wars && \
     mv /build/ZeroJudge/ROOT.war /build/wars && \
     mv /build/ZeroJudge_Server/ZeroJudge_Server.war /build/wars
+
+RUN curl https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.6/mysql-connector-java-5.1.6.jar -o /build/mysql-connector-java-5.1.6.jar
 
 
 FROM docker.io/tomcat:9-jdk8-openjdk-slim
