@@ -44,7 +44,6 @@ RUN apk add --no-cache curl openjdk8-jre && \
     apk del curl
 
 COPY --from=builder /build/wars /usr/local/tomcat/webapps/
-COPY --from=builder /build/mysql-connector-java-5.1.6.jar /usr/local/tomcat/lib
 COPY scripts/zerojudge-init.sh /usr/local/tomcat/bin
 
 RUN ${TOMCAT_HOME}/bin/catalina.sh start && \
