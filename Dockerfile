@@ -1,4 +1,4 @@
-FROM docker.io/tomcat:8-jdk8-openjdk-slim AS builder
+FROM docker.io/tomcat:9-jdk8-openjdk-slim AS builder
 
 RUN apt-get update && \
     mkdir -p /usr/share/man/man1 && \
@@ -24,12 +24,12 @@ RUN ant -f /build/ZeroJudge/build.xml clean makewar callpy -Dappname=ROOT -DTOMC
     mv /build/ZeroJudge_Server/ZeroJudge_Server.war /build/wars
 
 
-FROM docker.io/tomcat:8-jdk8-openjdk-slim
+FROM docker.io/tomcat:9-jdk8-openjdk-slim
 
 COPY --from=builder /build/wars /usr/local/tomcat/webapps/
 COPY --from=builder /build/mysql-connector-java-5.1.6.jar /usr/local/tomcat/lib
 COPY --from=builder /JudgeServer_CONSOLE /JudgeServer_CONSOLE
-COPY scripts/init.sh /bin
+COPY scripts/zerojudge-init.sh /usr/local/tomcat/bin
 
 RUN useradd -u 1002 zero && \
     apt-get update && \
@@ -44,6 +44,6 @@ RUN useradd -u 1002 zero && \
     #ln -sf /etc/zerojudge/configs/contexts/ROOT.xml /usr/local/tomcat/webapps/ROOT/META-INF/context.xml && \
     #ln -sf /etc/zerojudge/configs/contexts/ZeroJudge_Server.xml /usr/local/tomcat/webapps/ZeroJudge_Server/META-INF/context.xml && \
     ln -sf /etc/zerojudge/configs/ServerConfig.xml /usr/local/tomcat/webapps/ZeroJudge_Server/WEB-INF/ServerConfig.xml && \
-    chmod 755 /bin/init.sh
+    chmod 755 /usr/local/tomcat/bin/zerojudge-init.sh
 
-CMD ["init.sh"]
+CMD ["zerojudge-init.sh"]
