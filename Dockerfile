@@ -42,10 +42,13 @@ RUN useradd -u 1002 zero && \
     #while [ ! -f "/usr/local/tomcat/webapps/ROOT/META-INF/context.xml" ] && [ ! -f "/usr/local/tomcat/webapps/ZeroJudge_Server/META-INF/context.xml" ]; do sleep 0.2; done && \
     sleep 10 && \
     catalina.sh stop && \
+    mkdir /etc/zerojudge && \
     ln -sf /etc/zerojudge/ssh /root/.ssh && \
     #ln -sf /etc/zerojudge/configs/contexts/ROOT.xml /usr/local/tomcat/webapps/ROOT/META-INF/context.xml && \
     #ln -sf /etc/zerojudge/configs/contexts/ZeroJudge_Server.xml /usr/local/tomcat/webapps/ZeroJudge_Server/META-INF/context.xml && \
     ln -sf /etc/zerojudge/configs/ServerConfig.xml /usr/local/tomcat/webapps/ZeroJudge_Server/WEB-INF/ServerConfig.xml && \
     chmod 755 /usr/local/tomcat/bin/zerojudge-init.sh
+
+VOLUME [ "/etc/zerojudge" ]
 
 CMD ["zerojudge-init.sh"]

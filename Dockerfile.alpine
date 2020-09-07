@@ -67,8 +67,11 @@ COPY --from=builder /JudgeServer_CONSOLE /JudgeServer_CONSOLE
 
 RUN adduser --system --no-create-home --disabled-password --shell=/sbin/nologin -u 1002 zero && \
     apk add --no-cache openjdk8-jre sudo openssh-client dos2unix rsync python3 && \
+    mkdir /etc/zerojudge && \
     ln -sf /etc/zerojudge/ssh /root/.ssh && \
     ln -sf /etc/zerojudge/configs/ServerConfig.xml /usr/local/tomcat/webapps/ZeroJudge_Server/WEB-INF/ServerConfig.xml && \
     chmod 755 /usr/local/tomcat/bin/zerojudge-init.sh
+
+VOLUME [ "/etc/zerojudge" ]
 
 CMD ["zerojudge-init.sh"]
