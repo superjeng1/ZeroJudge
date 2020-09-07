@@ -70,8 +70,9 @@ RUN adduser --system --no-create-home --disabled-password --shell=/sbin/nologin 
     mkdir /etc/zerojudge && \
     ln -sf /etc/zerojudge/ssh /root/.ssh && \
     ln -sf /etc/zerojudge/configs/ServerConfig.xml /usr/local/tomcat/webapps/ZeroJudge_Server/WEB-INF/ServerConfig.xml && \
+    ln -sf /etc/zerojudge/disk/ZeroJudge_CONSOLE /ZeroJudge_CONSOLE && \
     chmod 755 /usr/local/tomcat/bin/zerojudge-init.sh
 
-VOLUME [ "/etc/zerojudge" ]
+VOLUME [ "/etc/zerojudge", "/var/lib/lxc/lxc-ALL" ]
 
 CMD ["zerojudge-init.sh"]
