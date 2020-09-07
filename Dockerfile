@@ -23,24 +23,34 @@ RUN ant -f /build/ZeroJudge/build.xml clean makewar callpy -Dappname=ROOT -DTOMC
     mv /build/ZeroJudge/ROOT.war /build/wars && \
     mv /build/ZeroJudge_Server/ZeroJudge_Server.war /build/wars
 
-RUN curl https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.6/mysql-connector-java-5.1.6.jar -o /build/mysql-connector-java-5.1.6.jar
+
+FROM docker.io/tomcat:9-jdk8-openjdk-slim AS deployer
+
+COPY --from=builder /build/wars /usr/local/tomcat/webapps/
+COPY scripts/zerojudge-init.sh /usr/local/tomcat/bin
+
+RUN apt-get update && \
+    apt-get install --no-install-recommends curl netcat -y && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* && \
+    curl https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.6/mysql-connector-java-5.1.6.jar -o /usr/local/tomcat/lib/mysql-connector-java-5.1.6.jar && \
+    catalina.sh start && \
+    until $(nc -z 127.0.0.1 8005); do sleep 1; done && \
+    catalina.sh stop && \
+    cat /usr/local/tomcat/logs/catalina* && \
+    rm /usr/local/tomcat/webapps/*.war
 
 
 FROM docker.io/tomcat:9-jdk8-openjdk-slim
 
-COPY --from=builder /build/wars /usr/local/tomcat/webapps/
-COPY --from=builder /build/mysql-connector-java-5.1.6.jar /usr/local/tomcat/lib
+COPY --from=deployer /usr/local/tomcat /usr/local/tomcat
 COPY --from=builder /JudgeServer_CONSOLE /JudgeServer_CONSOLE
-COPY scripts/zerojudge-init.sh /usr/local/tomcat/bin
 
 RUN useradd -u 1002 zero && \
     apt-get update && \
     apt-get install --no-install-recommends sudo ssh dos2unix rsync python3-bs4 iproute2 -y && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
-    catalina.sh start && \
-    until $(nc -z 127.0.0.1 8005); do sleep 1; done && \
-    catalina.sh stop && \
     mkdir /etc/zerojudge && \
     ln -sf /etc/zerojudge/ssh /root/.ssh && \
     #ln -sf /etc/zerojudge/configs/contexts/ROOT.xml /usr/local/tomcat/webapps/ROOT/META-INF/context.xml && \
