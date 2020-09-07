@@ -46,7 +46,8 @@ FROM docker.io/tomcat:9-jdk8-openjdk-slim
 COPY --from=deployer /usr/local/tomcat /usr/local/tomcat
 COPY --from=builder /JudgeServer_CONSOLE /JudgeServer_CONSOLE
 
-RUN useradd -u 1002 zero && \
+RUN groupadd -rg 1000 zero && \
+    useradd -rs /usr/sbin/nologin -u 1000 -g 1000 zero && \
     apt-get update && \
     apt-get install --no-install-recommends sudo ssh dos2unix rsync python3-bs4 iproute2 -y && \
     apt-get clean && \

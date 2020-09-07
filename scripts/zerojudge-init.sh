@@ -1,23 +1,26 @@
 #!/bin/sh
+
 if [ -z ${SSH_HOST+x} ]; then
-  SSH_HOST=`/sbin/ip route|awk '/default/ { print $3 }'`
+  SSH_HOST=$(/sbin/ip route | awk '/default/ { print $3 }')
 fi
 if [ -z ${SSH_USER+x} ]; then
   SSH_USER="root"
 fi
+ssh-keyscan -H $SSH_HOST > ~/.ssh/known_hosts
+
+
 if [ -z ${TOMCAT_SSL_ENABLED+x} ]; then
   cp -f /usr/local/tomcat/webapps/ROOT/WEB-INF/web_http.xml /usr/local/tomcat/webapps/ROOT/WEB-INF/web.xml
 else
   cp -f /usr/local/tomcat/webapps/ROOT/WEB-INF/web_https.xml /usr/local/tomcat/webapps/ROOT/WEB-INF/web.xml
 fi
-ssh-keyscan -H $SSH_HOST > ~/.ssh/known_hosts
+
 
 cat << EOF > /bin/lxc-attach
 #!/bin/sh
 ssh $SSH_USER@$SSH_HOST lxc-attach \$(printf "\\"%s\\" " "\$@")
 EOF
 
-chmod 755 /bin/lxc-attach
 
 cat << EOF > /usr/local/tomcat/webapps/ROOT/META-INF/context.xml
 <?xml version="1.0" encoding="utf-8"?>
@@ -42,6 +45,7 @@ cat << EOF >> /usr/local/tomcat/webapps/ROOT/META-INF/context.xml
 </Context>
 EOF
 
+
 cat << EOF > /usr/local/tomcat/webapps/ZeroJudge_Server/META-INF/context.xml
 <?xml version="1.0" encoding="UTF-8"?>
 <Context docBase="ZeroJudge_Server">
@@ -57,5 +61,18 @@ fi
 cat << EOF >> /usr/local/tomcat/webapps/ZeroJudge_Server/META-INF/context.xml
 </Context>
 EOF
+
+
+chmod 755 /bin/lxc-attach
+
+echo > /usr/local/tomcat/webapps/ROOT/InitializedListener.py
+chown -R zero:zero /ZeroJudge_CONSOLE
+chmod -R 770 /ZeroJudge_CONSOLE
+
+
+echo > /usr/local/tomcat/webapps/ZeroJudge_Server/InitializedListener.py
+chown -R zero:zero 
+chmod -R 770 /JudgeServer_CONSOLE
+
 
 exec /usr/local/tomcat/bin/catalina.sh run

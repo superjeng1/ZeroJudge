@@ -65,7 +65,8 @@ ENV TOMCAT_MAJOR=9 \
 COPY --from=deployer /usr/local/tomcat /usr/local/tomcat
 COPY --from=builder /JudgeServer_CONSOLE /JudgeServer_CONSOLE
 
-RUN adduser --system --no-create-home --disabled-password --shell=/sbin/nologin -u 1002 zero && \
+RUN addgroup -Sg 1000 zero && \
+    adduser -SDHG zero -u 1000 zero && \
     apk add --no-cache openjdk8-jre sudo openssh-client dos2unix rsync python3 && \
     mkdir /etc/zerojudge && \
     ln -sf /etc/zerojudge/ssh /root/.ssh && \
