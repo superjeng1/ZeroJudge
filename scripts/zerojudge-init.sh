@@ -1,7 +1,7 @@
 #!/bin/sh
 SHEBANG="#!/bin/sh"
 
-[ -z ${MY_SQL_PASSWORD+x} ] || { printf '%s\n' "ERROR: Environment varible \"MY_SQL_PASSWORD\" is not set!" >&2; exit 1; }
+[ -z ${MY_SQL_PASSWORD+x} ] && { printf '%s\n' "ERROR: Environment varible \"MY_SQL_PASSWORD\" is not set!" >&2; exit 1; }
 
 if [ -z ${MY_SQL_IP+x} ]; then
   printf '%s\n' "CAUTION: Environment varible \"MY_SQL_IP\" is not set! Assuming it is hosted on host machine, and host IP will be automatically discovered."
