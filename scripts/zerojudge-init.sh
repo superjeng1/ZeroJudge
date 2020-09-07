@@ -1,13 +1,38 @@
 #!/bin/sh
 SHEBANG="#!/bin/sh"
 
-if [ -z ${SSH_HOST+x} ]; then
-  SSH_HOST=$(/sbin/ip route | awk '/default/ { print $3 }')
+[ -z ${MY_SQL_PASSWORD+x} ] || { printf '%s\n' "ERROR: Environment varible \"MY_SQL_PASSWORD\" is not set!" >&2; exit 1; }
+
+if [ -z ${MY_SQL_IP+x} ]; then
+  printf '%s\n' "CAUTION: Environment varible \"MY_SQL_IP\" is not set! Assuming it is hosted on host machine, and host IP will be automatically discovered."
+  MY_SQL_IP=$(/sbin/ip route | awk '/default/ { print $3 }')
+  printf '%s %s\n' "INFO: Host IP discovered is:" ${MY_SQL_IP}
 fi
+if [ -z ${MY_SQL_PORT+x} ]; then
+  printf '%s\n' "INFO: Environment varible \"MY_SQL_PORT\" is not set! Assuming default port 3306."
+  MY_SQL_PORT="3306"
+fi
+if [ -z ${MY_SQL_DB_NAME+x} ]; then
+  printf '%s\n' "INFO: Environment varible \"MY_SQL_DB_NAME\" is not set! Assuming \"zerojudge\"."
+  MY_SQL_DB_NAME="zerojudge"
+fi
+if [ -z ${MY_SQL_USERNAME+x} ]; then
+  printf '%s\n' "INFO: Environment varible \"MY_SQL_USERNAME\" is not set! Assuming \"zerojudge\"."
+  MY_SQL_USERNAME="zerojudge"
+fi
+
 if [ -z ${SSH_USER+x} ]; then
+  printf '%s\n' "CAUTION: Environment varible \"SSH_USER\" is not set! Using root."
   SSH_USER="root"
 fi
-ssh-keyscan -H $SSH_HOST > ~/.ssh/known_hosts
+if [ -z ${SSH_HOST+x} ]; then
+  printf '%s\n' "INFO: Environment varible \"SSH_HOST\" is not set! This SHOULD be host machine anyways, so host IP will be automatically discovered."
+  SSH_HOST=$(/sbin/ip route | awk '/default/ { print $3 }')
+  printf '%s %s\n' "INFO: Host IP discovered is:" ${SSH_HOST}
+fi
+ssh-keyscan -H ${SSH_HOST} > ~/.ssh/known_hosts
+
+[ -z ${REVERSE_PROXY_IP+x} ] || { printf '%s\n' "INFO: Environment varible \"REVERSE_PROXY_IP\" is not yet set. Using an reverse proxy like nginx or apache could be helpful."; }
 
 
 if [ -z ${TOMCAT_SSL_ENABLED+x} ]; then
