@@ -32,6 +32,7 @@ if [ -z ${SSH_HOST+x} ]; then
 fi
 ssh-keyscan -H ${SSH_HOST} > ~/.ssh/known_hosts
 
+
 [ -z ${REVERSE_PROXY_IP+x} ] && { printf '%s\n' "INFO: Environment varible \"REVERSE_PROXY_IP\" is not yet set. Using an reverse proxy like nginx or apache could be helpful."; }
 
 
