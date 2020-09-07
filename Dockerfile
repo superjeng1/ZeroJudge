@@ -35,7 +35,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/* && \
     curl https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.6/mysql-connector-java-5.1.6.jar -o /usr/local/tomcat/lib/mysql-connector-java-5.1.6.jar && \
     catalina.sh start && \
-    until $(nc -z 127.0.0.1 8005); do sleep 1; done && \
+    until $(nc -z 127.0.0.1 8005) && grep -q "Server startup in " "/usr/local/tomcat/logs/catalina*"; do sleep 0.2; done && \
     catalina.sh stop && \
     cat /usr/local/tomcat/logs/catalina* && \
     rm /usr/local/tomcat/webapps/*.war
