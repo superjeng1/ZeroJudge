@@ -47,7 +47,7 @@ COPY --from=builder /build/wars /usr/local/tomcat/webapps/
 COPY scripts/zerojudge-init.sh /usr/local/tomcat/bin
 
 RUN ${TOMCAT_HOME}/bin/catalina.sh start && \
-    sleep 10 && \
+    until $(nc -z 127.0.0.1 8005); do sleep 1; done && \
     ${TOMCAT_HOME}/bin/catalina.sh stop && \
     rm /usr/local/tomcat/webapps/*.war
 
