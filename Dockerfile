@@ -37,7 +37,6 @@ RUN apt-get update && \
     catalina.sh start && \
     until $(nc -z 127.0.0.1 8005); do sleep 1; done && \
     catalina.sh stop && \
-    cat /usr/local/tomcat/logs/catalina* && \
     rm /usr/local/tomcat/webapps/*.war
 
 
