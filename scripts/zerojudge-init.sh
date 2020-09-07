@@ -1,4 +1,5 @@
 #!/bin/sh
+SHEBANG="#!/bin/sh"
 
 if [ -z ${SSH_HOST+x} ]; then
   SSH_HOST=$(/sbin/ip route | awk '/default/ { print $3 }')
@@ -17,7 +18,7 @@ fi
 
 
 cat << EOF > /bin/lxc-attach
-#!/bin/sh
+$SHEBANG
 ssh $SSH_USER@$SSH_HOST lxc-attach \$(printf "\\"%s\\" " "\$@")
 EOF
 

@@ -26,8 +26,10 @@ RUN ant -f /build/ZeroJudge/build.xml clean makewar callpy -Dappname=ROOT -DTOMC
 
 FROM docker.io/tomcat:9-jdk8-openjdk-slim AS deployer
 
+ENV SHEBANG="#!/bin/bash"
+
 COPY --from=builder /build/wars /usr/local/tomcat/webapps/
-COPY scripts/zerojudge-init.sh /usr/local/tomcat/bin
+COPY scripts/zerojudge-init.sh /tmp
 
 RUN apt-get update && \
     apt-get install --no-install-recommends curl netcat -y && \
@@ -37,7 +39,9 @@ RUN apt-get update && \
     catalina.sh start && \
     until $(nc -z 127.0.0.1 8005); do sleep 1; done && \
     catalina.sh stop && \
-    rm /usr/local/tomcat/webapps/*.war
+    rm /usr/local/tomcat/webapps/*.war && \
+    printf '%s\n%s\n' "${SHEBANG}" "SHEBANG=\"${SHEBANG}\"" > /usr/local/tomcat/bin/zerojudge-init.sh && \
+    tail +3 /tmp/zerojudge-init.sh >> /usr/local/tomcat/bin/zerojudge-init.sh
 
 
 FROM docker.io/tomcat:9-jdk8-openjdk-slim

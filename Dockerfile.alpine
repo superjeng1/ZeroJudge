@@ -26,7 +26,8 @@ RUN ant -f /build/ZeroJudge/build.xml clean makewar callpy -Dappname=ROOT -DTOMC
 
 FROM docker.io/alpine:latest AS deployer
 
-ENV TOMCAT_MAJOR=9 \
+ENV SHEBANG="#!/bin/busybox" \
+    TOMCAT_MAJOR=9 \
     TOMCAT_VERSION=9.0.37 \
     TOMCAT_HOME=/usr/local/tomcat \
     CATALINA_HOME=/usr/local/tomcat \
@@ -44,12 +45,14 @@ RUN apk add --no-cache curl openjdk8-jre && \
     apk del curl
 
 COPY --from=builder /build/wars /usr/local/tomcat/webapps/
-COPY scripts/zerojudge-init.sh /usr/local/tomcat/bin
+COPY scripts/zerojudge-init.sh /tmp
 
 RUN ${TOMCAT_HOME}/bin/catalina.sh start && \
     until $(nc -z 127.0.0.1 8005); do sleep 1; done && \
     ${TOMCAT_HOME}/bin/catalina.sh stop && \
-    rm /usr/local/tomcat/webapps/*.war
+    rm /usr/local/tomcat/webapps/*.war && \
+    printf '%s\n%s\n' "${SHEBANG}" "SHEBANG=\"${SHEBANG}\"" > /usr/local/tomcat/bin/zerojudge-init.sh && \
+    tail +3 /tmp/zerojudge-init.sh >> /usr/local/tomcat/bin/zerojudge-init.sh
 
 
 FROM docker.io/alpine:latest
