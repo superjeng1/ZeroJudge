@@ -66,12 +66,12 @@ EOF
 chmod 755 /bin/lxc-attach
 
 echo > /usr/local/tomcat/webapps/ROOT/InitializedListener.py
-chown -R zero:zero /ZeroJudge_CONSOLE
-chmod -R 770 /ZeroJudge_CONSOLE
+chown -R zero:zero /etc/zerojudge/disk/ZeroJudge_CONSOLE
+chmod -R 770 /etc/zerojudge/disk/ZeroJudge_CONSOLE
 
 
 echo > /usr/local/tomcat/webapps/ZeroJudge_Server/InitializedListener.py
-chown -R zero:zero 
+chown -R zero:zero /JudgeServer_CONSOLE
 chmod -R 770 /JudgeServer_CONSOLE
 
 
