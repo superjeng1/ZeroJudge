@@ -36,10 +36,10 @@ ssh-keyscan -H ${SSH_HOST} > ~/.ssh/known_hosts
 [ -z ${REVERSE_PROXY_IP+x} ] && { printf '%s\n' "INFO: Environment varible \"REVERSE_PROXY_IP\" is not yet set. Using an reverse proxy like nginx or apache could be helpful."; }
 
 
-[ ${TOMCAT_SSL_ENABLED} = "false" ] || [ ${TOMCAT_SSL_ENABLED} = "NO" ] || [ ${TOMCAT_SSL_ENABLED} = "no" ] && { TOMCAT_SSL_ENABLED="FALSE"; }
+[ ! -z ${TOMCAT_SSL_ENABLED+x} ] && { [ ${TOMCAT_SSL_ENABLED} = "false" ] || [ ${TOMCAT_SSL_ENABLED} = "NO" ] || [ ${TOMCAT_SSL_ENABLED} = "no" ] && { TOMCAT_SSL_ENABLED="FALSE"; } }
 
 if [ -z ${TOMCAT_SSL_ENABLED+x} ] || [ ${TOMCAT_SSL_ENABLED} = "FALSE" ]; then
-  [ ${TOMCAT_SSL_ENABLED} != "FALSE" ] && { printf '%s\n' "INFO: Environment varible \"TOMCAT_SSL_ENABLED\" is not set. Defaulting to \"FALSE\". If you are using an reverse proxy with SSL and correct redirect HTTP to HTTPS settings, then set this to \"FALSE\"."; }
+  [ -z ${TOMCAT_SSL_ENABLED+x} ] && { printf '%s\n' "INFO: Environment varible \"TOMCAT_SSL_ENABLED\" is not set. Defaulting to \"FALSE\". If you are using an reverse proxy with SSL and correct redirect HTTP to HTTPS settings, then set this to \"FALSE\"."; }
   cp -f /usr/local/tomcat/webapps/ROOT/WEB-INF/web_http.xml /usr/local/tomcat/webapps/ROOT/WEB-INF/web.xml
 else
   cp -f /usr/local/tomcat/webapps/ROOT/WEB-INF/web_https.xml /usr/local/tomcat/webapps/ROOT/WEB-INF/web.xml
