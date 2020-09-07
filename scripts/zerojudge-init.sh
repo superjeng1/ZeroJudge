@@ -32,10 +32,13 @@ if [ -z ${SSH_HOST+x} ]; then
 fi
 ssh-keyscan -H ${SSH_HOST} > ~/.ssh/known_hosts
 
-[ -z ${REVERSE_PROXY_IP+x} ] || { printf '%s\n' "INFO: Environment varible \"REVERSE_PROXY_IP\" is not yet set. Using an reverse proxy like nginx or apache could be helpful."; }
+[ -z ${REVERSE_PROXY_IP+x} ] && { printf '%s\n' "INFO: Environment varible \"REVERSE_PROXY_IP\" is not yet set. Using an reverse proxy like nginx or apache could be helpful."; }
 
 
-if [ -z ${TOMCAT_SSL_ENABLED+x} ]; then
+if [ -z ${TOMCAT_SSL_ENABLED+x} ] || [ ${TOMCAT_SSL_ENABLED} = false ]; then
+  if [ ${TOMCAT_SSL_ENABLED} != false ]; then
+  	printf '%s\n' "INFO: Environment varible \"TOMCAT_SSL_ENABLED\" is not set. Defaulting to \"false\". If you are using an reverse proxy with SSL and correct redirect HTTP to HTTPS settings, then set this to \"false\"."
+  fi
   cp -f /usr/local/tomcat/webapps/ROOT/WEB-INF/web_http.xml /usr/local/tomcat/webapps/ROOT/WEB-INF/web.xml
 else
   cp -f /usr/local/tomcat/webapps/ROOT/WEB-INF/web_https.xml /usr/local/tomcat/webapps/ROOT/WEB-INF/web.xml
