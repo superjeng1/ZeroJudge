@@ -56,7 +56,7 @@ RUN apk add --no-cache gnupg wget openjdk8-jre && \
 			"https://archive.apache.org/dist/$distFile" \
 			${mvnFile:+"https://repo1.maven.org/maven2/org/apache/tomcat/tomcat/$mvnFile"} \
 		; do \
-			if wget -O "$f" "$distUrl" && [ -s "$f" ]; then \
+			if wget -nv -O "$f" "$distUrl" && [ -s "$f" ]; then \
 				success=1; \
 				break; \
 			fi; \
@@ -65,7 +65,7 @@ RUN apk add --no-cache gnupg wget openjdk8-jre && \
 	}; \
 	\
 	ddist 'tomcat.tar.gz' "tomcat/tomcat-$TOMCAT_MAJOR/v$TOMCAT_VERSION/bin/apache-tomcat-$TOMCAT_VERSION.tar.gz" "$TOMCAT_VERSION/tomcat-$TOMCAT_VERSION.tar.gz"; \
-	echo "$TOMCAT_SHA512 *tomcat.tar.gz" | sha512sum --strict --check -; \
+	echo "$TOMCAT_SHA512 *tomcat.tar.gz" | sha512sum -c -; \
 	ddist 'tomcat.tar.gz.asc' "tomcat/tomcat-$TOMCAT_MAJOR/v$TOMCAT_VERSION/bin/apache-tomcat-$TOMCAT_VERSION.tar.gz.asc" "$TOMCAT_VERSION/tomcat-$TOMCAT_VERSION.tar.gz.asc"; \
 	export GNUPGHOME="$(mktemp -d)"; \
 	for key in $GPG_KEYS; do \
@@ -77,7 +77,7 @@ RUN apk add --no-cache gnupg wget openjdk8-jre && \
 	rm tomcat.tar.gz*; \
 	command -v gpgconf && gpgconf --kill all || :; \
     rm -rf webapps/* && \
-    wget -O lib/mysql-connector-java-5.1.6.jar https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.6/mysql-connector-java-5.1.6.jar
+    wget -nv -O lib/mysql-connector-java-5.1.6.jar https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.6/mysql-connector-java-5.1.6.jar
 
 COPY --from=builder /build/wars /usr/local/tomcat/webapps/
 COPY scripts/zerojudge-init.sh /usr/local/tomcat/bin
