@@ -1,50 +1,29 @@
 #!/bin/sh
 SHEBANG="#!/bin/sh"
 
-[ -z ${MY_SQL_PASSWORD+x} ] && { printf '%s\n' "ERROR: Environment varible \"MY_SQL_PASSWORD\" is not set!" >&2; exit 1; }
+HOST_IP=$(/sbin/ip route | awk '/default/ { print $3 }')
+printf '%s %s\n%s\n' "INFO: Host IP automatically discovered is:" ${HOST_IP} "INFO: The above IP will be used as MySQL server IP and SSH host IP if not overriden respectively."
 
-if [ -z ${MY_SQL_IP+x} ]; then
-  printf '%s\n' "CAUTION: Environment varible \"MY_SQL_IP\" is not set! Assuming it is hosted on host machine, and host IP will be automatically discovered."
-  MY_SQL_IP=$(/sbin/ip route | awk '/default/ { print $3 }')
-  printf '%s %s\n' "INFO: Host IP discovered is:" ${MY_SQL_IP}
-fi
-if [ -z ${MY_SQL_PORT+x} ]; then
-  printf '%s\n' "INFO: Environment varible \"MY_SQL_PORT\" is not set! Assuming default port 3306."
-  MY_SQL_PORT="3306"
-fi
-if [ -z ${MY_SQL_DB_NAME+x} ]; then
-  printf '%s\n' "INFO: Environment varible \"MY_SQL_DB_NAME\" is not set! Assuming \"zerojudge\"."
-  MY_SQL_DB_NAME="zerojudge"
-fi
-if [ -z ${MY_SQL_USERNAME+x} ]; then
-  printf '%s\n' "INFO: Environment varible \"MY_SQL_USERNAME\" is not set! Assuming \"zerojudge\"."
-  MY_SQL_USERNAME="zerojudge"
-fi
+[ -z ${MY_SQL_PASSWORD+x} ]  && { printf '%s\n' "ERROR: Environment varible \"MY_SQL_PASSWORD\" is not set!" >&2; exit 1; }
+[ -z ${MY_SQL_IP+x} ]        && { MY_SQL_IP=${HOST_IP}; printf '%s\n' "CAUTION: Environment varible \"MY_SQL_IP\" is not set! Assuming it is hosted on host machine."; }
+[ -z ${MY_SQL_PORT+x} ]      && { MY_SQL_PORT="3306"; printf '%s\n' "INFO: Environment varible \"MY_SQL_PORT\" is not set! Assuming default port 3306."; }
+[ -z ${MY_SQL_DB_NAME+x} ]   && { MY_SQL_DB_NAME="zerojudge"; printf '%s\n' "INFO: Environment varible \"MY_SQL_DB_NAME\" is not set! Assuming \"zerojudge\"."; }
+[ -z ${MY_SQL_USERNAME+x} ]  && { MY_SQL_USERNAME="zerojudge"; printf '%s\n' "INFO: Environment varible \"MY_SQL_USERNAME\" is not set! Assuming \"zerojudge\"."; }
 
-if [ -z ${SSH_USER+x} ]; then
-  printf '%s\n' "CAUTION: Environment varible \"SSH_USER\" is not set! Using root."
-  SSH_USER="root"
-fi
-if [ -z ${SSH_HOST+x} ]; then
-  printf '%s\n' "INFO: Environment varible \"SSH_HOST\" is not set! This SHOULD be host machine anyways, so host IP will be automatically discovered."
-  SSH_HOST=$(/sbin/ip route | awk '/default/ { print $3 }')
-  printf '%s %s\n' "INFO: Host IP discovered is:" ${SSH_HOST}
-fi
-ssh-keyscan -H ${SSH_HOST} > ~/.ssh/known_hosts
-
+[ -z ${SSH_USER+x} ]         && { SSH_USER="root"; printf '%s\n' "CAUTION: Environment varible \"SSH_USER\" is not set! Using root."; }
+[ -z ${SSH_HOST+x} ]         && { SSH_HOST=${HOST_IP}; printf '%s\n' "INFO: Environment varible \"SSH_HOST\" is not set. This SHOULD be host machine anyways, so using Host IP."; }
 
 [ -z ${REVERSE_PROXY_IP+x} ] && { printf '%s\n' "INFO: Environment varible \"REVERSE_PROXY_IP\" is not yet set. Using an reverse proxy like nginx or apache could be helpful."; }
 
-
-[ ! -z ${TOMCAT_SSL_ENABLED+x} ] && { [ ${TOMCAT_SSL_ENABLED} = "false" ] || [ ${TOMCAT_SSL_ENABLED} = "NO" ] || [ ${TOMCAT_SSL_ENABLED} = "no" ] && { TOMCAT_SSL_ENABLED="FALSE"; } }
-
-if [ -z ${TOMCAT_SSL_ENABLED+x} ] || [ ${TOMCAT_SSL_ENABLED} = "FALSE" ]; then
-  [ -z ${TOMCAT_SSL_ENABLED+x} ] && { printf '%s\n' "INFO: Environment varible \"TOMCAT_SSL_ENABLED\" is not set. Defaulting to \"FALSE\". If you are using an reverse proxy with SSL and correct redirect HTTP to HTTPS settings, then set this to \"FALSE\"."; }
+if [ -z ${TOMCAT_SSL_ENABLED+x} ] || [ ${TOMCAT_SSL_ENABLED} = "FALSE" ] || [ ${TOMCAT_SSL_ENABLED} = "false" ] || [ ${TOMCAT_SSL_ENABLED} = "NO" ] || [ ${TOMCAT_SSL_ENABLED} = "no" ]; then
+  [ -z ${TOMCAT_SSL_ENABLED+x} ] && { printf '%s\n' "INFO: Environment varible \"TOMCAT_SSL_ENABLED\" is not set. Defaulting to \"FALSE\". If you are using an reverse proxy with SSL and correct redirect HTTP to HTTPS settings, then set this to \"FALSE\" if you want to suppress this message."; }
   cp -f /usr/local/tomcat/webapps/ROOT/WEB-INF/web_http.xml /usr/local/tomcat/webapps/ROOT/WEB-INF/web.xml
 else
   cp -f /usr/local/tomcat/webapps/ROOT/WEB-INF/web_https.xml /usr/local/tomcat/webapps/ROOT/WEB-INF/web.xml
 fi
 
+
+ssh-keyscan -H ${SSH_HOST} > ~/.ssh/known_hosts
 
 cat << EOF > /bin/lxc-attach
 $SHEBANG
