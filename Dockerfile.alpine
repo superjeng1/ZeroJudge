@@ -28,28 +28,64 @@ FROM docker.io/alpine:latest AS deployer
 
 ENV TOMCAT_MAJOR=9 \
     TOMCAT_VERSION=9.0.37 \
+    TOMCAT_SHA512=077c3e69553b9388b5cdf46b6d204e895d69629a4ec8dd8cf13eb2ee97a04f50e70478fee4f2f91e8809b85bdcd3656188b00d17165c86cf6113ded18729ba06 \
     TOMCAT_HOME=/usr/local/tomcat \
+    TOMCAT_NATIVE_LIBDIR=/usr/local/tomcat/native-jni-lib \
+    LD_LIBRARY_PATH=/usr/local/tomcat/native-jni-lib \
     CATALINA_HOME=/usr/local/tomcat \
     CATALINA_OUT=/dev/null \
     JAVA_HOME=/usr/lib/jvm/java-1.8-openjdk/jre \
-    PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/lib/jvm/java-1.8-openjdk/jre/bin:/usr/lib/jvm/java-1.8-openjdk/bin:/usr/local/tomcat/bin
+    PATH=$PATH:/usr/lib/jvm/java-1.8-openjdk/jre/bin:/usr/lib/jvm/java-1.8-openjdk/bin:/usr/local/tomcat/bin
 
-RUN apk add --no-cache curl openjdk8-jre && \
-    curl -jksSL -o /tmp/apache-tomcat.tar.gz http://archive.apache.org/dist/tomcat/tomcat-${TOMCAT_MAJOR}/v${TOMCAT_VERSION}/bin/apache-tomcat-${TOMCAT_VERSION}.tar.gz && \
-    tar -C /tmp -zxf /tmp/apache-tomcat.tar.gz && \
-    mv /tmp/apache-tomcat-${TOMCAT_VERSION} ${TOMCAT_HOME} && \
-    rm -rf /tmp/* && \
-    rm -rf ${TOMCAT_HOME}/webapps/* && \
-    curl https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.6/mysql-connector-java-5.1.6.jar -o ${TOMCAT_HOME}/lib/mysql-connector-java-5.1.6.jar && \
-    apk del curl
+ENV GPG_KEYS 05AB33110949707C93A279E3D3EFE6B686867BA6 07E48665A34DCAFAE522E5E6266191C37C037D42 47309207D818FFD8DCD3F83F1931D684307A10A5 541FBE7D8F78B25E055DDEE13C370389288584E7 61B832AC2F1C5A90F0F9B00A1C506407564C17A3 79F7026C690BAA50B92CD8B66A3AD3F4F22C4FED 9BA44C2621385CB966EBA586F72C284D731FABEE A27677289986DB50844682F8ACB77FC2E86E29AC A9C5DF4D22E99998D9875A5110C01C5A2F6059E7 DCFD35E0BF8CA7344752DE8B6FB21E8933C60243 F3A04C595DB5B6A5F1ECA43E3B7BBB100D811BBE F7DA48BB64BCB84ECBA7EE6935CD23C10D498E23
+
+RUN mkdir -p "$CATALINA_HOME"
+WORKDIR $CATALINA_HOME
+
+RUN apk add --no-cache gnupg wget openjdk8-jre && \
+    ddist() { \
+		local f="$1"; shift; \
+		local distFile="$1"; shift; \
+		local mvnFile="${1:-}"; \
+		local success=; \
+		local distUrl=; \
+		for distUrl in \
+			"https://www.apache.org/dyn/closer.cgi?action=download&filename=$distFile" \
+			"https://www-us.apache.org/dist/$distFile" \
+			"https://www.apache.org/dist/$distFile" \
+			"https://archive.apache.org/dist/$distFile" \
+			${mvnFile:+"https://repo1.maven.org/maven2/org/apache/tomcat/tomcat/$mvnFile"} \
+		; do \
+			if wget -O "$f" "$distUrl" && [ -s "$f" ]; then \
+				success=1; \
+				break; \
+			fi; \
+		done; \
+		[ -n "$success" ]; \
+	}; \
+	\
+	ddist 'tomcat.tar.gz' "tomcat/tomcat-$TOMCAT_MAJOR/v$TOMCAT_VERSION/bin/apache-tomcat-$TOMCAT_VERSION.tar.gz" "$TOMCAT_VERSION/tomcat-$TOMCAT_VERSION.tar.gz"; \
+	echo "$TOMCAT_SHA512 *tomcat.tar.gz" | sha512sum --strict --check -; \
+	ddist 'tomcat.tar.gz.asc' "tomcat/tomcat-$TOMCAT_MAJOR/v$TOMCAT_VERSION/bin/apache-tomcat-$TOMCAT_VERSION.tar.gz.asc" "$TOMCAT_VERSION/tomcat-$TOMCAT_VERSION.tar.gz.asc"; \
+	export GNUPGHOME="$(mktemp -d)"; \
+	for key in $GPG_KEYS; do \
+		gpg --batch --keyserver ha.pool.sks-keyservers.net --recv-keys "$key"; \
+	done; \
+	gpg --batch --verify tomcat.tar.gz.asc tomcat.tar.gz; \
+    tar -xf tomcat.tar.gz --strip-components=1; \
+	rm bin/*.bat; \
+	rm tomcat.tar.gz*; \
+	command -v gpgconf && gpgconf --kill all || :; \
+    rm -rf webapps/* && \
+    wget -O lib/mysql-connector-java-5.1.6.jar https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.6/mysql-connector-java-5.1.6.jar
 
 COPY --from=builder /build/wars /usr/local/tomcat/webapps/
 COPY scripts/zerojudge-init.sh /usr/local/tomcat/bin
 
-RUN ${TOMCAT_HOME}/bin/catalina.sh start && \
+RUN catalina.sh start && \
     until $(nc -z 127.0.0.1 8005); do sleep 1; done && \
-    ${TOMCAT_HOME}/bin/catalina.sh stop && \
-    rm /usr/local/tomcat/webapps/*.war
+    catalina.sh stop && \
+    rm webapps/*.war
 
 
 FROM docker.io/alpine:latest
