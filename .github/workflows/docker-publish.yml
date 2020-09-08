@@ -60,8 +60,10 @@ jobs:
           # Use Docker `testing-alpine` tag convention
           [ "$VERSION" == "master" ] && VERSION=testing
           
-          docker build . --file docker/tomcat-9-jdk8-debian-slim/Dockerfile --tag $IMAGE_NAME:$VERSION
-          docker build . --file docker/alpine/Dockerfile --tag $IMAGE_NAME:$VERSION-alpine
+          export VERSION=$VERSION
+          
+          #docker build . --file docker/tomcat-9-jdk8-debian-slim/Dockerfile --tag $IMAGE_NAME:$VERSION
+          #docker build . --file docker/alpine/Dockerfile --tag $IMAGE_NAME:$VERSION-alpine
 
       - name: Log into GitHub Container Registry
       # TODO: Create a PAT with `read:packages` and `write:packages` scopes and save it as an Actions secret `CR_PAT`
@@ -77,10 +79,10 @@ jobs:
           echo IMAGE_ID=$IMAGE_ID
           echo VERSION=$VERSION
 
-          docker tag $IMAGE_NAME:$VERSION $IMAGE_ID:$VERSION
-          docker tag $IMAGE_NAME:$VERSION-alpine $IMAGE_ID:$VERSION-alpine
-          docker push $IMAGE_ID:$VERSION
-          docker push $IMAGE_ID:$VERSION-alpine
+          #docker tag $IMAGE_NAME:$VERSION $IMAGE_ID:$VERSION
+          #docker tag $IMAGE_NAME:$VERSION-alpine $IMAGE_ID:$VERSION-alpine
+          #docker push $IMAGE_ID:$VERSION
+          #docker push $IMAGE_ID:$VERSION-alpine
           
       - name: Log into Docker Hub
       # TODO: Create a PAT with `read:packages` and `write:packages` scopes and save it as an Actions secret `CR_PAT`
@@ -96,7 +98,7 @@ jobs:
           echo IMAGE_ID=$IMAGE_ID
           echo VERSION=$VERSION
 
-          docker tag $IMAGE_NAME:$VERSION $IMAGE_ID:$VERSION
-          docker tag $IMAGE_NAME:$VERSION-alpine $IMAGE_ID:$VERSION-alpine
-          docker push $IMAGE_ID:$VERSION
-          docker push $IMAGE_ID:$VERSION-alpine
+          #docker tag $IMAGE_NAME:$VERSION $IMAGE_ID:$VERSION
+          #docker tag $IMAGE_NAME:$VERSION-alpine $IMAGE_ID:$VERSION-alpine
+          #docker push $IMAGE_ID:$VERSION
+          #docker push $IMAGE_ID:$VERSION-alpine
