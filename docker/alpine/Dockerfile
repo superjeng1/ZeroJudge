@@ -112,4 +112,6 @@ RUN addgroup -Sg 1000 zero && \
 
 VOLUME [ "/etc/zerojudge", "/var/lib/lxc/lxc-ALL" ]
 
+EXPOSE 8080
+
 CMD [ "zerojudge-init.sh" ]

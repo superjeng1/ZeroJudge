@@ -63,4 +63,6 @@ RUN groupadd -rg 1000 zero && \
 
 VOLUME [ "/etc/zerojudge", "/var/lib/lxc/lxc-ALL" ]
 
+EXPOSE 8080
+
 CMD [ "/bin/bash", "zerojudge-init.sh" ]
