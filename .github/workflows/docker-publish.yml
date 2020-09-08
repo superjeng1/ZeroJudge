@@ -60,10 +60,8 @@ jobs:
           # Use Docker `testing-alpine` tag convention
           [ "$VERSION" == "master" ] && VERSION=testing
           
-          export VERSION=$VERSION
-          
-          #docker build . --file docker/tomcat-9-jdk8-debian-slim/Dockerfile --tag $IMAGE_NAME:$VERSION
-          #docker build . --file docker/alpine/Dockerfile --tag $IMAGE_NAME:$VERSION-alpine
+          docker build . --file docker/tomcat-9-jdk8-debian-slim/Dockerfile --tag $IMAGE_NAME:$VERSION
+          docker build . --file docker/alpine/Dockerfile --tag $IMAGE_NAME:$VERSION-alpine
 
       - name: Log into GitHub Container Registry
       # TODO: Create a PAT with `read:packages` and `write:packages` scopes and save it as an Actions secret `CR_PAT`
@@ -76,13 +74,22 @@ jobs:
           # Change all uppercase to lowercase
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
 
+          # Strip git ref prefix from version
+          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+
+          # Strip "v" prefix from tag name
+          # [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
+
+          # Use Docker `testing-alpine` tag convention
+          [ "$VERSION" == "master" ] && VERSION=testing
+          
           echo IMAGE_ID=$IMAGE_ID
           echo VERSION=$VERSION
 
-          #docker tag $IMAGE_NAME:$VERSION $IMAGE_ID:$VERSION
-          #docker tag $IMAGE_NAME:$VERSION-alpine $IMAGE_ID:$VERSION-alpine
-          #docker push $IMAGE_ID:$VERSION
-          #docker push $IMAGE_ID:$VERSION-alpine
+          docker tag $IMAGE_NAME:$VERSION $IMAGE_ID:$VERSION
+          docker tag $IMAGE_NAME:$VERSION-alpine $IMAGE_ID:$VERSION-alpine
+          docker push $IMAGE_ID:$VERSION
+          docker push $IMAGE_ID:$VERSION-alpine
           
       - name: Log into Docker Hub
       # TODO: Create a PAT with `read:packages` and `write:packages` scopes and save it as an Actions secret `CR_PAT`
@@ -95,10 +102,19 @@ jobs:
           # Change all uppercase to lowercase
           IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
 
+          # Strip git ref prefix from version
+          VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
+
+          # Strip "v" prefix from tag name
+          # [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
+
+          # Use Docker `testing-alpine` tag convention
+          [ "$VERSION" == "master" ] && VERSION=testing
+          
           echo IMAGE_ID=$IMAGE_ID
           echo VERSION=$VERSION
 
-          #docker tag $IMAGE_NAME:$VERSION $IMAGE_ID:$VERSION
-          #docker tag $IMAGE_NAME:$VERSION-alpine $IMAGE_ID:$VERSION-alpine
-          #docker push $IMAGE_ID:$VERSION
-          #docker push $IMAGE_ID:$VERSION-alpine
+          docker tag $IMAGE_NAME:$VERSION $IMAGE_ID:$VERSION
+          docker tag $IMAGE_NAME:$VERSION-alpine $IMAGE_ID:$VERSION-alpine
+          docker push $IMAGE_ID:$VERSION
+          docker push $IMAGE_ID:$VERSION-alpine
