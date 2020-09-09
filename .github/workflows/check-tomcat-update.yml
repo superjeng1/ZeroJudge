@@ -66,9 +66,6 @@ jobs:
             -e 's/^(ENV GPG_KEYS) .*/\1 '"${versionGpgKeys[*]}"'/' \
             "docker/alpine/Dockerfile" \
             > "docker/alpine/Dockerfile"
-          gpgconf --kill
-          echo "default-cache-ttl 3600" >> ~/.gnupg/gpg-agent.conf
-          echo "maximum-cache-ttl 3600" >> ~/.gnupg/gpg-agent.conf
           echo "${{ secrets.BOT_PGP_KEY }}" | gpg --import --batch --always-trust
           echo "${{ secrets.BOT_PGP_FINGER }}:6:" | gpg --import-ownertrust
           echo | gpg --clearsign --pinentry-mode loopback --passphrase '${{ secrets.BOT_PGP_PASS }}'
