@@ -37,7 +37,7 @@ jobs:
             curl -fsSL --compressed "https://www-us.apache.org/dist/tomcat/tomcat-$majorVersion/" \
               | grep '<a href="v' \
               | sed -r 's!.*<a href="v([^"/]+)/?".*!\1!' \
-              | sort -rV
+              | sort -rV \
               | head -1
           )"
           fullVersion=
