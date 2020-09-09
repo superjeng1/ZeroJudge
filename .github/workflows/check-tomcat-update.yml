@@ -70,7 +70,8 @@ jobs:
           echo "${{ secrets.BOT_PGP_FINGER }}:6:" | gpg --import-ownertrust
           echo | gpg --clearsign --pinentry-mode loopback --passphrase '${{ secrets.BOT_PGP_PASS }}'
           git config user.name superjeng1-bot
-          git config user.email isuperwilly@gmail.com
+          git config user.email 71003564+superjeng1-bot@users.noreply.github.com
+          git config user.signingkey ${{ secrets.BOT_PGP_KEY_ID }}
           git add -u
           git commit -S -m "Updated Tomcat $majorVersion Version to $fullVersion"
           git push
