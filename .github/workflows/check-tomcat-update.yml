@@ -70,9 +70,9 @@ jobs:
           mv docker/alpine/Dockerfile.modified docker/alpine/Dockerfile
           echo "${{ secrets.BOT_PGP_KEY }}" | gpg --import --batch --always-trust
           echo "${{ secrets.BOT_PGP_FINGER }}:6:" | gpg --import-ownertrust
-          echo | gpg --clearsign --pinentry-mode loopback --passphrase '${{ secrets.BOT_PGP_PASS }}'
+          echo | gpg --clearsign --pinentry-mode loopback --passphrase '${{ secrets.BOT_PGP_PASS }}' > /dev/null
           git config user.name superjeng1-bot
           git config user.email 71003564+superjeng1-bot@users.noreply.github.com
           git config user.signingkey ${{ secrets.BOT_PGP_KEY_ID }}
           git add -u
-          git diff-index --quiet HEAD || { git commit -S -m "Updated Tomcat $majorVersion Version to $fullVersion"; git push; }
+          git diff-index --quiet HEAD && echo "No update available for now. Exiting..." || { git commit -S -m "Updated Tomcat $majorVersion Version to $fullVersion"; git push; }
