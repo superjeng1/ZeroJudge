@@ -2,9 +2,9 @@ name: Docker
 
 on:
   push:
-    # Publish `master` as Docker `testing-alpine` image.
+    # Publish `main` as Docker `testing-alpine` image.
     branches:
-      - master
+      - main
 
     # Publish `v1.2.3` tags as releases.
     tags:
@@ -58,7 +58,7 @@ jobs:
           # [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
 
           # Use Docker `testing-alpine` tag convention
-          [ "$VERSION" == "master" ] && VERSION=testing
+          [ "$VERSION" == "main" ] && VERSION=testing
           
           docker build . --file docker/tomcat-9-jdk8-debian-slim/Dockerfile --tag $IMAGE_NAME:$VERSION
           docker build . --file docker/alpine/Dockerfile --tag $IMAGE_NAME:$VERSION-alpine
@@ -81,7 +81,7 @@ jobs:
           # [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
 
           # Use Docker `testing-alpine` tag convention
-          [ "$VERSION" == "master" ] && VERSION=testing
+          [ "$VERSION" == "main" ] && VERSION=testing
           
           echo IMAGE_ID=$IMAGE_ID
           echo VERSION=$VERSION
@@ -109,7 +109,7 @@ jobs:
           # [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
 
           # Use Docker `testing-alpine` tag convention
-          [ "$VERSION" == "master" ] && VERSION=testing
+          [ "$VERSION" == "main" ] && VERSION=testing
           
           echo IMAGE_ID=$IMAGE_ID
           echo VERSION=$VERSION
