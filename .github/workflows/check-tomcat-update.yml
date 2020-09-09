@@ -56,14 +56,14 @@ jobs:
             -e 's/^(ENV TOMCAT_VERSION) .*/\1 '"$fullVersion"'/' \
             -e 's/^(ENV TOMCAT_MAJOR) .*/\1 '"$majorVersion"'/' \
             -e 's/^(ENV TOMCAT_SHA512) .*/\1 '"$sha512"'/' \
-            -e 's/^(ENV GPG_KEYS) .*/\1 '"${versionGpgKeys[*]}"'/' \
+            -e 's/^(ENV GPG_KEYS) .*/\1 '"${GPG_KEYS[*]}"'/' \
             "docker/tomcat-9-jdk8-debian-slim/Dockerfile" \
             > "docker/tomcat-9-jdk8-debian-slim/Dockerfile"
           sed -r \
             -e 's/^(ENV TOMCAT_VERSION) .*/\1 '"$fullVersion"'/' \
             -e 's/^(ENV TOMCAT_MAJOR) .*/\1 '"$majorVersion"'/' \
             -e 's/^(ENV TOMCAT_SHA512) .*/\1 '"$sha512"'/' \
-            -e 's/^(ENV GPG_KEYS) .*/\1 '"${versionGpgKeys[*]}"'/' \
+            -e 's/^(ENV GPG_KEYS) .*/\1 '"${GPG_KEYS[*]}"'/' \
             "docker/alpine/Dockerfile" \
             > "docker/alpine/Dockerfile"
           echo "${{ secrets.BOT_PGP_KEY }}" | gpg --import --batch --always-trust
