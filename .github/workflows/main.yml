@@ -1,0 +1,76 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Check Tomcat update
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
+on:
+  schedule:
+    - cron: 0 16 * * *
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  update-tomcat:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.BOT_PAT }}
+
+      # Runs a set of commands using the runners shell
+      - name: Check Latest Tomcat 9 version
+        env: 
+          majorVersion: 9
+          GPG_KEYS: 05AB33110949707C93A279E3D3EFE6B686867BA6 07E48665A34DCAFAE522E5E6266191C37C037D42 47309207D818FFD8DCD3F83F1931D684307A10A5 541FBE7D8F78B25E055DDEE13C370389288584E7 61B832AC2F1C5A90F0F9B00A1C506407564C17A3 79F7026C690BAA50B92CD8B66A3AD3F4F22C4FED 9BA44C2621385CB966EBA586F72C284D731FABEE A27677289986DB50844682F8ACB77FC2E86E29AC A9C5DF4D22E99998D9875A5110C01C5A2F6059E7 DCFD35E0BF8CA7344752DE8B6FB21E8933C60243 F3A04C595DB5B6A5F1ECA43E3B7BBB100D811BBE F7DA48BB64BCB84ECBA7EE6935CD23C10D498E23
+
+        run: |
+          apt-get update
+          apt-get install --no-install-recommends gpg
+          possibleVersion="$(
+            curl -fsSL --compressed "https://www-us.apache.org/dist/tomcat/tomcat-$majorVersion/" \
+              | grep '<a href="v' \
+              | sed -r 's!.*<a href="v([^"/]+)/?".*!\1!' \
+              | sort -rV
+              | head -1
+          )"
+          fullVersion=
+          sha512=
+          if possibleSha512="$(
+            curl -fsSL "https://www-us.apache.org/dist/tomcat/tomcat-$majorVersion/v$possibleVersion/bin/apache-tomcat-$possibleVersion.tar.gz.sha512" \
+              | cut -d' ' -f1
+          )" && [ -n "$possibleSha512" ]; then
+            fullVersion="$possibleVersion"
+            sha512="$possibleSha512"
+          fi
+          if [ -z "$fullVersion" ]; then
+            echo >&2 "error: failed to find latest release for $version"
+            exit 1
+          fi
+          echo "Tomcat $majorVersion: $fullVersion ($sha512)"
+          sed -r \
+            -e 's/^(ENV TOMCAT_VERSION) .*/\1 '"$fullVersion"'/' \
+            -e 's/^(ENV TOMCAT_MAJOR) .*/\1 '"$majorVersion"'/' \
+            -e 's/^(ENV TOMCAT_SHA512) .*/\1 '"$sha512"'/' \
+            -e 's/^(ENV GPG_KEYS) .*/\1 '"${versionGpgKeys[*]}"'/' \
+            "docker/tomcat-9-jdk8-debian-slim/Dockerfile" \
+            > "docker/tomcat-9-jdk8-debian-slim/Dockerfile"
+          sed -r \
+            -e 's/^(ENV TOMCAT_VERSION) .*/\1 '"$fullVersion"'/' \
+            -e 's/^(ENV TOMCAT_MAJOR) .*/\1 '"$majorVersion"'/' \
+            -e 's/^(ENV TOMCAT_SHA512) .*/\1 '"$sha512"'/' \
+            -e 's/^(ENV GPG_KEYS) .*/\1 '"${versionGpgKeys[*]}"'/' \
+            "docker/alpine/Dockerfile" \
+            > "docker/alpine/Dockerfile"
+          echo "${{ secrets.BOT_PGP_KEY }}" | gpg --import --batch --always-trust
+          echo "${{ secrets.BOT_PGP_FINGER }}:6:" | gpg --import-ownertrust
+          echo | gpg --clearsign --pinentry-mode loopback --passphrase "${{ secrets.BOT_PGP_PASS }}"
+          git config user.name superjeng1-bot
+          git config user.email isuperwilly@gmail.com
+          git add -u
+          git commit -S -m "Updated Tomcat $majorVersion Version to $fullVersion"
+          git push
