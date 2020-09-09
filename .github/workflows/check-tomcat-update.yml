@@ -66,7 +66,7 @@ jobs:
             -e 's/^(ENV GPG_KEYS) .*/\1 '"${versionGpgKeys[*]}"'/' \
             "docker/alpine/Dockerfile" \
             > "docker/alpine/Dockerfile"
-          gpgconf --kill
+          gpgconf --kill gpg-agent
           echo "default-cache-ttl 3600" >> ~/.gnupg/gpg-agent.conf
           echo "maximum-cache-ttl 3600" >> ~/.gnupg/gpg-agent.conf
           echo "${{ secrets.BOT_PGP_KEY }}" | gpg --import --batch --always-trust
