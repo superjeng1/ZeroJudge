@@ -3,19 +3,15 @@ FROM docker.io/tomcat:9-jdk8-openjdk-slim AS builder
 RUN apt-get update && \
     mkdir -p /usr/share/man/man1 && \
     apt-get install --no-install-recommends ant git python3 sudo g++ curl -y && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
-
-RUN mkdir /build && \
+    mkdir /build && \
     git clone https://github.com/jiangsir/ZeroJudge.git /build/ZeroJudge && \
     git --git-dir=/build/ZeroJudge/.git --work-tree=/build/ZeroJudge checkout -b branch_3.3 3.3 && \
     git clone https://github.com/jiangsir/ZeroJudge_Server.git /build/ZeroJudge_Server && \
     git --git-dir=/build/ZeroJudge_Server/.git --work-tree=/build/ZeroJudge_Server checkout -b branch_3.3 3.3 && \
     printf '3.3' > /build/ZeroJudge/WebContent/META-INF/Version.txt && \
     printf '3.3' > /build/ZeroJudge_Server/WebContent/META-INF/Version.txt && \
-    printf 'import os\napptmpdir = "/build/ZeroJudge"\nfor root, dirs, files in os.walk(apptmpdir + "/src/"):\n  for file in files:\n    if file.endswith(".java"):\n      print(os.path.join(root, file))\n      s = open(os.path.join(root, file), mode="r",\n        encoding="utf-8-sig").read()\n      open(os.path.join(root, file), mode="w",\n        encoding="utf-8").write(s)' | python3
-
-RUN ant -f /build/ZeroJudge/build.xml clean makewar callpy -Dappname=ROOT -DTOMCAT_HOME=/usr/local/tomcat/ && \
+    printf 'import os\napptmpdir = "/build/ZeroJudge"\nfor root, dirs, files in os.walk(apptmpdir + "/src/"):\n  for file in files:\n    if file.endswith(".java"):\n      print(os.path.join(root, file))\n      s = open(os.path.join(root, file), mode="r",\n        encoding="utf-8-sig").read()\n      open(os.path.join(root, file), mode="w",\n        encoding="utf-8").write(s)' | python3 && \
+    ant -f /build/ZeroJudge/build.xml clean makewar callpy -Dappname=ROOT -DTOMCAT_HOME=/usr/local/tomcat/ && \
     ant -f /build/ZeroJudge_Server/build.xml move_CONSOLE makewar -Dappname=ZeroJudge_Server -DTOMCAT_HOME=/usr/local/tomcat/ && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
