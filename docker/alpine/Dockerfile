@@ -66,10 +66,10 @@ RUN apk add --no-cache gnupg wget openjdk8-jre && \
     } && \
     \
     ddist 'tomcat.tar.gz' "tomcat/tomcat-$TOMCAT_MAJOR/v$TOMCAT_VERSION/bin/apache-tomcat-$TOMCAT_VERSION.tar.gz" "$TOMCAT_VERSION/tomcat-$TOMCAT_VERSION.tar.gz" && \
-    echo "$TOMCAT_SHA512 *tomcat.tar.gz" | sha512sum -c - && \
+    echo "$TOMCAT_SHA512  tomcat.tar.gz" | sha512sum -c - && \
     wget -nv -O "tomcat.tar.gz.asc" "https://downloads.apache.org/tomcat/tomcat-$TOMCAT_MAJOR/v$TOMCAT_VERSION/bin/apache-tomcat-$TOMCAT_VERSION.tar.gz.asc" && [ -s "tomcat.tar.gz.asc" ] && \
     wget -nv -O "KEYS" "https://downloads.apache.org/tomcat/tomcat-$TOMCAT_MAJOR/KEYS" && [ -s "KEYS" ] && \
-    echo "$GPG_KEY_FILE_SHA512 KEYS" | sha512sum -c - && \
+    echo "$GPG_KEY_FILE_SHA512  KEYS" | sha512sum -c - && \
     export GNUPGHOME="$(mktemp -d)" && \
     gpg --batch --import < KEYS && \
     gpg --list-keys --fingerprint | grep pub -A 1 | egrep -Ev "pub|--" | tr -d ' '  | awk 'BEGIN { FS = "\n" } ; { print $1":6:" } ' | gpg --batch --import-ownertrust && \
@@ -77,7 +77,6 @@ RUN apk add --no-cache gnupg wget openjdk8-jre && \
     tar -xf tomcat.tar.gz --strip-components=1 && \
     rm bin/*.bat && \
     rm tomcat.tar.gz* && \
-    command -v gpgconf && gpgconf --kill all || : && \
     rm -rf webapps/* && \
     wget -nv -O lib/mysql-connector-java-5.1.6.jar https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.6/mysql-connector-java-5.1.6.jar
 
