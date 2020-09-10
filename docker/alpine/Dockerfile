@@ -33,6 +33,9 @@ ENV TOMCAT_MAJOR=9 \
     JAVA_HOME=/usr/lib/jvm/java-1.8-openjdk/jre \
     PATH="/usr/local/tomcat/bin:$PATH"
 
+COPY --from=builder /build/wars /usr/local/tomcat/webapps/
+COPY scripts/zerojudge-init.sh /usr/local/tomcat/bin
+
 RUN mkdir -p "$CATALINA_HOME" && \
     cd "$CATALINA_HOME" && \
     apk add --no-cache gnupg wget openjdk8-jre && \
@@ -66,18 +69,11 @@ RUN mkdir -p "$CATALINA_HOME" && \
     gpg --batch --import < KEYS && \
     gpg --list-keys --fingerprint | grep pub -A 1 | egrep -Ev "pub|--" | tr -d ' '  | awk 'BEGIN { FS = "\n" } ; { print $1":6:" } ' | gpg --batch --import-ownertrust && \
     gpg --batch --verify tomcat.tar.gz.asc tomcat.tar.gz && \
-    tar -xf tomcat.tar.gz --strip-components=1 && \
+    tar -xf tomcat.tar.gz --strip-components=1 --exclude="*/webapps"&& \
     rm bin/*.bat && \
     rm tomcat.tar.gz* && \
-    rm -rf webapps/* && \
-    wget -nv -O lib/mysql-connector-java-5.1.6.jar https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.6/mysql-connector-java-5.1.6.jar
-
-WORKDIR $CATALINA_HOME
-
-COPY --from=builder /build/wars /usr/local/tomcat/webapps/
-COPY scripts/zerojudge-init.sh /usr/local/tomcat/bin
-
-RUN catalina.sh start && \
+    wget -nv -O lib/mysql-connector-java-5.1.6.jar https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.6/mysql-connector-java-5.1.6.jar && \
+    catalina.sh start && \
     until $(nc -z 127.0.0.1 8005); do sleep 1; done && \
     catalina.sh stop && \
     rm webapps/*.war
