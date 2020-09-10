@@ -41,7 +41,6 @@ jobs:
           echo VERSION=$VERSION
 
           docker tag $IMAGE_NAME:$VERSION $IMAGE_ID:$VERSION
-          [ "$VERSION" != "testing" ] && { docker tag $IMAGE_NAME:$VERSION $IMAGE_ID:latest; }
           docker push $IMAGE_ID
           
       - name: Log into Docker Hub
@@ -58,7 +57,7 @@ jobs:
           echo VERSION=$VERSION
 
           docker tag $IMAGE_NAME:$VERSION $IMAGE_ID:$VERSION
-          [ "$VERSION" != "testing" ] && { docker tag $IMAGE_NAME:$VERSION $IMAGE_ID:latest; }
+
           docker push $IMAGE_ID
   
   # Push image to GitHub Packages.
@@ -68,7 +67,6 @@ jobs:
     #needs: test
 
     runs-on: ubuntu-latest
-    if: github.event_name == 'push'
 
     steps:
       - uses: actions/checkout@v2
@@ -95,7 +93,6 @@ jobs:
           echo VERSION=$VERSION
 
           docker tag $IMAGE_NAME:$VERSION-alpine $IMAGE_ID:$VERSION-alpine
-          [ "$VERSION" != "testing" ] && { docker tag $IMAGE_NAME:$VERSION-alpine $IMAGE_ID:latest-alpine; }
           docker push $IMAGE_ID
           
       - name: Log into Docker Hub
@@ -112,5 +109,4 @@ jobs:
           echo VERSION=$VERSION
 
           docker tag $IMAGE_NAME:$VERSION-alpine $IMAGE_ID:$VERSION-alpine
-          [ "$VERSION" != "testing" ] && { docker tag $IMAGE_NAME:$VERSION-alpine $IMAGE_ID:latest-alpine; }
           docker push $IMAGE_ID
