@@ -34,7 +34,7 @@ ENV TOMCAT_MAJOR=9 \
     PATH="/usr/local/tomcat/bin:$PATH"
 
 COPY --from=builder /build/wars /usr/local/tomcat/webapps/
-COPY scripts/zerojudge-init.sh /usr/local/tomcat/bin
+COPY scripts/zerojudge-init.sh /usr/local/tomcat/bin/zerojudge-init.sh
 
 RUN mkdir -p "$CATALINA_HOME" && \
     cd "$CATALINA_HOME" && \
