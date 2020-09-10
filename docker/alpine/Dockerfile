@@ -33,9 +33,8 @@ WORKDIR $CATALINA_HOME
 
 ENV CATALINA_OUT /dev/null
 
-# see https://www.apache.org/dist/tomcat/tomcat-$TOMCAT_MAJOR/KEYS
-# see also "update.sh" (https://github.com/docker-library/tomcat/blob/master/update.sh)
-ENV GPG_KEYS 05AB33110949707C93A279E3D3EFE6B686867BA6 07E48665A34DCAFAE522E5E6266191C37C037D42 47309207D818FFD8DCD3F83F1931D684307A10A5 541FBE7D8F78B25E055DDEE13C370389288584E7 61B832AC2F1C5A90F0F9B00A1C506407564C17A3 79F7026C690BAA50B92CD8B66A3AD3F4F22C4FED 9BA44C2621385CB966EBA586F72C284D731FABEE A27677289986DB50844682F8ACB77FC2E86E29AC A9C5DF4D22E99998D9875A5110C01C5A2F6059E7 DCFD35E0BF8CA7344752DE8B6FB21E8933C60243 F3A04C595DB5B6A5F1ECA43E3B7BBB100D811BBE F7DA48BB64BCB84ECBA7EE6935CD23C10D498E23
+# SHA512 of this file: https://www.apache.org/dist/tomcat/tomcat-$TOMCAT_MAJOR/KEYS
+ENV GPG_KEY_FILE_SHA512 f333a7bc1a1ef6762f0b9193d1e3e669d7628ee1613b884200b4e9a091eb813c8c4eb9491f13580c14df1a1ecba94b2a1c0b98ed35a7302c6fb800390906a19f
 
 ENV JAVA_HOME /usr/lib/jvm/java-1.8-openjdk/jre
 
@@ -68,11 +67,12 @@ RUN apk add --no-cache gnupg wget openjdk8-jre && \
     \
     ddist 'tomcat.tar.gz' "tomcat/tomcat-$TOMCAT_MAJOR/v$TOMCAT_VERSION/bin/apache-tomcat-$TOMCAT_VERSION.tar.gz" "$TOMCAT_VERSION/tomcat-$TOMCAT_VERSION.tar.gz" && \
     echo "$TOMCAT_SHA512 *tomcat.tar.gz" | sha512sum -c - && \
-    ddist 'tomcat.tar.gz.asc' "tomcat/tomcat-$TOMCAT_MAJOR/v$TOMCAT_VERSION/bin/apache-tomcat-$TOMCAT_VERSION.tar.gz.asc" "$TOMCAT_VERSION/tomcat-$TOMCAT_VERSION.tar.gz.asc" && \
+    wget -nv -O "tomcat.tar.gz.asc" "https://downloads.apache.org/tomcat/tomcat-$TOMCAT_MAJOR/v$TOMCAT_VERSION/bin/apache-tomcat-$TOMCAT_VERSION.tar.gz.asc" && [ -s "tomcat.tar.gz.asc" ] && \
+    wget -nv -O "KEYS" "https://downloads.apache.org/tomcat/tomcat-$TOMCAT_MAJOR/KEYS" && [ -s "KEYS" ] && \
+    echo "$GPG_KEY_FILE_SHA512 KEYS" | sha512sum -c - && \
     export GNUPGHOME="$(mktemp -d)" && \
-    for key in $GPG_KEYS; do \
-        gpg --batch --keyserver ha.pool.sks-keyservers.net --recv-keys "$key"; \
-    done && \
+    gpg --batch --import < KEYS && \
+    gpg --list-keys --fingerprint | grep pub -A 1 | egrep -Ev "pub|--" | tr -d ' '  | awk 'BEGIN { FS = "\n" } ; { print $1":6:" } ' | gpg --batch --import-ownertrust && \
     gpg --batch --verify tomcat.tar.gz.asc tomcat.tar.gz && \
     tar -xf tomcat.tar.gz --strip-components=1 && \
     rm bin/*.bat && \

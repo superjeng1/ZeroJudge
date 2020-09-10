@@ -26,8 +26,9 @@ jobs:
       - name: Check Latest Tomcat 9 version
         env: 
           majorVersion: 9
-          GPG_KEYS: 05AB33110949707C93A279E3D3EFE6B686867BA6 07E48665A34DCAFAE522E5E6266191C37C037D42 47309207D818FFD8DCD3F83F1931D684307A10A5 541FBE7D8F78B25E055DDEE13C370389288584E7 61B832AC2F1C5A90F0F9B00A1C506407564C17A3 79F7026C690BAA50B92CD8B66A3AD3F4F22C4FED 9BA44C2621385CB966EBA586F72C284D731FABEE A27677289986DB50844682F8ACB77FC2E86E29AC A9C5DF4D22E99998D9875A5110C01C5A2F6059E7 DCFD35E0BF8CA7344752DE8B6FB21E8933C60243 F3A04C595DB5B6A5F1ECA43E3B7BBB100D811BBE F7DA48BB64BCB84ECBA7EE6935CD23C10D498E23
-
+          # SHA512 of this file: https://downloads.apache.org/tomcat/tomcat-9/KEYS
+          GPG_KEY_FILE_SHA512: f333a7bc1a1ef6762f0b9193d1e3e669d7628ee1613b884200b4e9a091eb813c8c4eb9491f13580c14df1a1ecba94b2a1c0b98ed35a7302c6fb800390906a19f
+        
         run: |
           possibleVersion="$(
             curl -fsSL --compressed "https://www-us.apache.org/dist/tomcat/tomcat-$majorVersion/" \
@@ -54,15 +55,7 @@ jobs:
             -e 's/^(ENV TOMCAT_VERSION) .*/\1 '"$fullVersion"'/' \
             -e 's/^(ENV TOMCAT_MAJOR) .*/\1 '"$majorVersion"'/' \
             -e 's/^(ENV TOMCAT_SHA512) .*/\1 '"$sha512"'/' \
-            -e 's/^(ENV GPG_KEYS) .*/\1 '"${GPG_KEYS[*]}"'/' \
-            "docker/tomcat-9-jdk8-debian-slim/Dockerfile" \
-            > "docker/tomcat-9-jdk8-debian-slim/Dockerfile.modified"
-          mv docker/tomcat-9-jdk8-debian-slim/Dockerfile.modified docker/tomcat-9-jdk8-debian-slim/Dockerfile
-          sed -r \
-            -e 's/^(ENV TOMCAT_VERSION) .*/\1 '"$fullVersion"'/' \
-            -e 's/^(ENV TOMCAT_MAJOR) .*/\1 '"$majorVersion"'/' \
-            -e 's/^(ENV TOMCAT_SHA512) .*/\1 '"$sha512"'/' \
-            -e 's/^(ENV GPG_KEYS) .*/\1 '"${GPG_KEYS[*]}"'/' \
+            -e 's/^(ENV GPG_KEY_FILE_SHA512) .*/\1 '"${GPG_KEY_FILE_SHA512}"'/' \
             "docker/alpine/Dockerfile" \
             > "docker/alpine/Dockerfile.modified"
           mv docker/alpine/Dockerfile.modified docker/alpine/Dockerfile
