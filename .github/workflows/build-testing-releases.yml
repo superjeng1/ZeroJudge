@@ -2,7 +2,7 @@ name: Build and Push to testing or releases
 
 on:
   push:
-    # Publish `main` as Docker `testing-alpine` image.
+    # Publish `main` as Docker `testing*` images.
     branches:
       - main
 
@@ -34,7 +34,7 @@ jobs:
           # Strip "v" prefix from tag name
           # [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
 
-          # Use Docker `testing-alpine` tag convention
+          # Use Docker `testing` tag convention
           [ "$VERSION" == "main" ] && VERSION=testing
           
           echo "::set-env name=VERSION::$VERSION"

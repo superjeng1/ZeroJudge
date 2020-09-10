@@ -1,0 +1,116 @@
+name: Build and Push to pr-*
+
+on:
+  # Run tests for any PRs.
+  pull_request:
+
+env:
+  IMAGE_NAME: zerojudge
+
+jobs:
+  # Push image to GitHub Packages.
+  # See also https://docs.docker.com/docker-hub/builds/
+  build-and-push-debian:
+    # Ensure test job passes before pushing image.
+    #needs: test
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build Debian image
+        run: |
+          # Strip git ref prefix from version
+          VERSION=$(echo "pr-${{ github.head_ref}}" | sed -e 's,.*/\(.*\),\1,')
+          
+          echo "::set-env name=VERSION::$VERSION"
+          docker build . --file docker/tomcat-9-jdk8-debian-slim/Dockerfile --tag $IMAGE_NAME:$VERSION
+
+      - name: Log into GitHub Container Registry
+        run: echo "${{ secrets.CR_PAT }}" | docker login https://ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Push Debian image to GitHub Container Registry
+        run: |
+          IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME
+          
+          # Change all uppercase to lowercase
+          IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
+          
+          echo IMAGE_ID=$IMAGE_ID
+          echo VERSION=$VERSION
+
+          docker tag $IMAGE_NAME:$VERSION $IMAGE_ID:$VERSION
+          [ "$VERSION" != "testing" ] && { docker tag $IMAGE_NAME:$VERSION $IMAGE_ID:latest; }
+          docker push $IMAGE_ID
+          
+      - name: Log into Docker Hub
+        run: echo "${{ secrets.DH_PAT }}" | docker login -u ${{ github.actor }} --password-stdin
+
+      - name: Push Debian image to Docker Hub
+        run: |
+          IMAGE_ID=docker.io/${{ github.repository_owner }}/$IMAGE_NAME
+
+          # Change all uppercase to lowercase
+          IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
+          
+          echo IMAGE_ID=$IMAGE_ID
+          echo VERSION=$VERSION
+
+          docker tag $IMAGE_NAME:$VERSION $IMAGE_ID:$VERSION
+          [ "$VERSION" != "testing" ] && { docker tag $IMAGE_NAME:$VERSION $IMAGE_ID:latest; }
+          docker push $IMAGE_ID
+  
+  # Push image to GitHub Packages.
+  # See also https://docs.docker.com/docker-hub/builds/
+  build-and-push-alpine:
+    # Ensure test job passes before pushing image.
+    #needs: test
+
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build image
+        run: |
+          # Strip git ref prefix from version
+          VERSION=$(echo "pr-${{ github.head_ref}}" | sed -e 's,.*/\(.*\),\1,')
+          
+          echo "::set-env name=VERSION::$VERSION"
+          docker build . --file docker/alpine/Dockerfile --tag $IMAGE_NAME:$VERSION-alpine
+
+      - name: Log into GitHub Container Registry
+        run: echo "${{ secrets.CR_PAT }}" | docker login https://ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Push image to GitHub Container Registry
+        run: |
+          IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME
+          
+          # Change all uppercase to lowercase
+          IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
+          
+          echo IMAGE_ID=$IMAGE_ID
+          echo VERSION=$VERSION
+
+          docker tag $IMAGE_NAME:$VERSION-alpine $IMAGE_ID:$VERSION-alpine
+          [ "$VERSION" != "testing" ] && { docker tag $IMAGE_NAME:$VERSION-alpine $IMAGE_ID:latest-alpine; }
+          docker push $IMAGE_ID
+          
+      - name: Log into Docker Hub
+        run: echo "${{ secrets.DH_PAT }}" | docker login -u ${{ github.actor }} --password-stdin
+
+      - name: Push image to Docker Hub
+        run: |
+          IMAGE_ID=docker.io/${{ github.repository_owner }}/$IMAGE_NAME
+
+          # Change all uppercase to lowercase
+          IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
+          
+          echo IMAGE_ID=$IMAGE_ID
+          echo VERSION=$VERSION
+
+          docker tag $IMAGE_NAME:$VERSION-alpine $IMAGE_ID:$VERSION-alpine
+          [ "$VERSION" != "testing" ] && { docker tag $IMAGE_NAME:$VERSION-alpine $IMAGE_ID:latest-alpine; }
+          docker push $IMAGE_ID
