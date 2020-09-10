@@ -51,13 +51,7 @@ jobs:
             exit 1
           fi
           echo "Newest Tomcat $majorVersion version is: $fullVersion (SHA512:$sha512)"
-          sed -r \
-            -e 's/^(ENV TOMCAT_VERSION) .*/\1 '"$fullVersion"'/' \
-            -e 's/^(ENV TOMCAT_MAJOR) .*/\1 '"$majorVersion"'/' \
-            -e 's/^(ENV TOMCAT_SHA512) .*/\1 '"$sha512"'/' \
-            -e 's/^(ENV GPG_KEY_FILE_SHA512) .*/\1 '"${GPG_KEY_FILE_SHA512}"'/' \
-            "docker/alpine/Dockerfile" \
-            > "docker/alpine/Dockerfile.modified"
+          perl -i -0pe 's/^(ENV) TOMCAT_MAJOR[^#]+/\1 TOMCAT_MAJOR='"$majorVersion"' \\\n    TOMCAT_VERSION='"$fullVersion"' \\\n    TOMCAT_SHA512='"$sha512"' \\\n    GPG_KEY_FILE_SHA512='"$GPG_KEY_FILE_SHA512"' \\\n    /gm' docker/alpine/Dockerfile
           mv docker/alpine/Dockerfile.modified docker/alpine/Dockerfile
           echo "${{ secrets.BOT_PGP_KEY }}" | gpg --import --batch --always-trust
           echo "${{ secrets.BOT_PGP_FINGER }}:6:" | gpg --import-ownertrust
