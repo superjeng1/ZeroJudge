@@ -1,6 +1,10 @@
 # ZeroJudge (Docker Image)
 This is a Taiwanese online judge made into an Docker Image, which would then be able to use with Docker or Podman etc.
 
+Built image is available on [GitHub Container Repository](https://github.com/users/superjeng1/packages/container/zerojudge/versions) and [Docker Hub](https://hub.docker.com/r/superjeng1/zerojudge)
+
+**IMPORTANT: However, setup is REQUIRED before first run, please do follow the instructions below.**
+
 中文說明尚未完成 (Chinese Version of this readme is still in the works)
 
 ## Installation
@@ -47,8 +51,9 @@ docker run --name zerojudge \
   -v /container-zerojudge-data:/etc/zerojudge \
   -v /var/lib/lxc/lxc-ALL/:/var/lib/lxc/lxc-ALL/ \
   -e MY_SQL_PASSWORD='<MySql Password>' \
-  -d docker.io/superjeng1/zerojudge:latest
+  -d ghcr.io/superjeng1/zerojudge:latest
 ```
+* Note: Image is also available on Docker Hub, just replace GitHub Container Repository (ghcr.io) with docker.io to use that.
 * Note: Look down below to find image tags and environment variables.
 * Note: Make sure to put yourown MySql Settings in the quotes `''`. And make sure you don't leave the brackets `<>` in-place.
 * For REVERSE PROXY USERS: Add the environment varible `REVERSE_PROXY_IP` with `-e REVERSE_PROXY_IP='<REVERSE_PROXY_IP>'` to make sure tomcat grabs the correct client IP.
