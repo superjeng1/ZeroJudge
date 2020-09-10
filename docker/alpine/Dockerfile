@@ -29,9 +29,9 @@ ENV TOMCAT_MAJOR=9 \
     GPG_KEY_FILE_SHA512=f333a7bc1a1ef6762f0b9193d1e3e669d7628ee1613b884200b4e9a091eb813c8c4eb9491f13580c14df1a1ecba94b2a1c0b98ed35a7302c6fb800390906a19f \
     CATALINA_HOME=/usr/local/tomcat \
     CATALINA_OUT=/dev/null \
-    TOMCAT_HOME="$CATALINA_HOME" \
+    TOMCAT_HOME=/usr/local/tomcat \
     JAVA_HOME=/usr/lib/jvm/java-1.8-openjdk/jre \
-    PATH="$CATALINA_HOME/bin:$PATH"
+    PATH="/usr/local/tomcat/bin:$PATH"
 
 RUN mkdir -p "$CATALINA_HOME" && \
     cd "$CATALINA_HOME" && \
@@ -92,10 +92,10 @@ ENV TOMCAT_MAJOR=9 \
     GPG_KEY_FILE_SHA512=f333a7bc1a1ef6762f0b9193d1e3e669d7628ee1613b884200b4e9a091eb813c8c4eb9491f13580c14df1a1ecba94b2a1c0b98ed35a7302c6fb800390906a19f \
     CATALINA_HOME=/usr/local/tomcat \
     CATALINA_OUT=/dev/null \
-    TOMCAT_HOME="$CATALINA_HOME" \
+    TOMCAT_HOME=/usr/local/tomcat \
     JAVA_HOME=/usr/lib/jvm/java-1.8-openjdk/jre \
-    PATH="$CATALINA_HOME/bin:$PATH"
-    
+    PATH="/usr/local/tomcat/bin:$PATH"
+
 COPY --from=deployer /usr/local/tomcat /usr/local/tomcat
 COPY --from=builder /JudgeServer_CONSOLE /JudgeServer_CONSOLE
 
