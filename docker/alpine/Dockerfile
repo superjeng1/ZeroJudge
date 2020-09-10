@@ -69,7 +69,7 @@ RUN mkdir -p "$CATALINA_HOME" && \
     gpg --batch --import < KEYS && \
     gpg --list-keys --fingerprint | grep pub -A 1 | egrep -Ev "pub|--" | tr -d ' '  | awk 'BEGIN { FS = "\n" } ; { print $1":6:" } ' | gpg --batch --import-ownertrust && \
     gpg --batch --verify tomcat.tar.gz.asc tomcat.tar.gz && \
-    tar -xf tomcat.tar.gz --strip-components=1 --exclude="*/webapps"&& \
+    tar -xf tomcat.tar.gz --strip-components=1 --exclude="apache-tomcat-*/webapps" && \
     rm bin/*.bat && \
     rm tomcat.tar.gz* && \
     wget -nv -O lib/mysql-connector-java-5.1.6.jar https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.6/mysql-connector-java-5.1.6.jar && \
