@@ -40,9 +40,11 @@ jobs:
           docker build . --file docker/tomcat-9-jdk8-debian-slim/Dockerfile --tag $IMAGE_NAME:$VERSION
 
       - name: Log into GitHub Container Registry
-        run: echo "${{ secrets.CR_PAT }}" | docker login https://ghcr.io -u ${{ github.actor }} --password-stdin
+        if: ${{ github.actor == 'superjeng1' || github.actor == 'superjeng1-bot' }}
+        run: ( [ '${{ github.actor }}' = 'superjeng1' ] && echo "${{ secrets.CR_PAT }}" || echo "${{ secrets.BOT_PAT }}" ) | docker login https://ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Push Debian image to GitHub Container Registry
+        if: ${{ github.actor == 'superjeng1' || github.actor == 'superjeng1-bot' }}
         run: |
           IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME
           
@@ -57,9 +59,11 @@ jobs:
           docker push $IMAGE_ID
           
       - name: Log into Docker Hub
-        run: echo "${{ secrets.DH_PAT }}" | docker login -u ${{ github.actor }} --password-stdin
+        if: ${{ github.actor == 'superjeng1' || github.actor == 'superjeng1-bot' }}
+        run: echo "${{ secrets.DH_PAT }}" | docker login -u ${{ github.repository_owner }} --password-stdin
 
       - name: Push Debian image to Docker Hub
+        if: ${{ github.actor == 'superjeng1' || github.actor == 'superjeng1-bot' }}
         run: |
           IMAGE_ID=docker.io/${{ github.repository_owner }}/$IMAGE_NAME
 
@@ -99,9 +103,11 @@ jobs:
           docker build . --file docker/alpine/Dockerfile --tag $IMAGE_NAME:$VERSION-alpine
 
       - name: Log into GitHub Container Registry
-        run: echo "${{ secrets.CR_PAT }}" | docker login https://ghcr.io -u ${{ github.actor }} --password-stdin
+        if: ${{ github.actor == 'superjeng1' || github.actor == 'superjeng1-bot' }}
+        run: ( [ '${{ github.actor }}' = 'superjeng1' ] && echo "${{ secrets.CR_PAT }}" || echo "${{ secrets.BOT_PAT }}" ) | docker login https://ghcr.io -u ${{ github.actor }} --password-stdin
 
       - name: Push image to GitHub Container Registry
+        if: ${{ github.actor == 'superjeng1' || github.actor == 'superjeng1-bot' }}
         run: |
           IMAGE_ID=ghcr.io/${{ github.repository_owner }}/$IMAGE_NAME
           
@@ -116,9 +122,11 @@ jobs:
           docker push $IMAGE_ID
           
       - name: Log into Docker Hub
-        run: echo "${{ secrets.DH_PAT }}" | docker login -u ${{ github.actor }} --password-stdin
+        if: ${{ github.actor == 'superjeng1' || github.actor == 'superjeng1-bot' }}
+        run: echo "${{ secrets.DH_PAT }}" | docker login -u ${{ github.repository_owner }} --password-stdin
 
       - name: Push image to Docker Hub
+        if: ${{ github.actor == 'superjeng1' || github.actor == 'superjeng1-bot' }}
         run: |
           IMAGE_ID=docker.io/${{ github.repository_owner }}/$IMAGE_NAME
 
