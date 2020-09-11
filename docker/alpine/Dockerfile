@@ -1,4 +1,5 @@
 FROM docker.io/tomcat:9-jdk8-openjdk-slim AS builder
+# The above is checksum of docker.io/tomcat:9-jdk8-openjdk-slim
 
 RUN apt-get update && \
     mkdir -p /usr/share/man/man1 && \
