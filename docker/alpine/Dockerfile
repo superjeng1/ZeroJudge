@@ -1,4 +1,5 @@
 FROM docker.io/tomcat:9-jdk8-openjdk-slim AS builder
+# The above is checksum of docker.io/tomcat:9-jdk8-openjdk-slim
 
 RUN apt-get update && \
     mkdir -p /usr/share/man/man1 && \
@@ -21,6 +22,7 @@ RUN apt-get update && \
 
 
 FROM docker.io/alpine:latest AS deployer
+# The above is checksum of docker.io/alpine:latest
 
 ENV TOMCAT_MAJOR=9 \
     TOMCAT_VERSION=9.0.37 \
@@ -80,6 +82,7 @@ RUN mkdir -p "$CATALINA_HOME" && \
 
 
 FROM docker.io/alpine:latest
+# The above is checksum of docker.io/alpine:latest
 
 ENV TOMCAT_MAJOR=9 \
     TOMCAT_VERSION=9.0.37 \

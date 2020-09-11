@@ -1,4 +1,5 @@
 FROM docker.io/tomcat:9-jdk8-openjdk-slim AS builder
+# The above is checksum of docker.io/tomcat:9-jdk8-openjdk-slim
 
 RUN apt-get update && \
     mkdir -p /usr/share/man/man1 && \
@@ -21,6 +22,7 @@ RUN apt-get update && \
 
 
 FROM docker.io/tomcat:9-jdk8-openjdk-slim AS deployer
+# The above is checksum of docker.io/tomcat:9-jdk8-openjdk-slim
 
 ENV SHEBANG="#!/bin/bash"
 
@@ -41,6 +43,7 @@ RUN apt-get update && \
 
 
 FROM docker.io/tomcat:9-jdk8-openjdk-slim
+# The above is checksum of docker.io/tomcat:9-jdk8-openjdk-slim
 
 COPY --from=deployer /usr/local/tomcat /usr/local/tomcat
 COPY --from=builder /JudgeServer_CONSOLE /JudgeServer_CONSOLE
