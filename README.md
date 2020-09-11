@@ -42,20 +42,51 @@ chmod -R 770 /container-zerojudge-data/configs
 chmod -R 700 /container-zerojudge-data/ssh
 ```
 
-6. MySQL Database (I am still working on a empty SQL dump, check back later! Sorry for the inconvenience!)
+6. Get the MySQL dumps from the author's repo [this](https://raw.githubusercontent.com/jiangsir/ZeroJudge/3.3/Schema_V3.0.sql) and [this](https://raw.githubusercontent.com/jiangsir/ZeroJudge/3.3/SchemaUpdate_V3.0.sql).
+
+7. Modify the second file:
+    * Line 3: Remove `DEFAULT ''` at near the end of the line
+    * Line 4: Remove this line entirely.
+
+8. Create MySQL database and user then import the dumps.
+```sh
+mysql -u root -p
+<Enter Password>
+CREATE DATABASE zerojudge;
+CREATE USER 'zerojudge'@'%' IDENTIFIED WITH mysql_native_password BY '<Your Password of choice>';
+FLUSH PRIVILEGES;
+exit;
+mysql -u root -p zerojudge < Schema_V3.0.sql
+<Enter Password>
+mysql -u root -p zerojudge < SchemaUpdate_V3.0.sql
+<Enter Password>
+mysql -u root -p
+<Enter Password>
+GRANT ALL ON zerojudge.* TO 'zerojudge'@'%';
+FLUSH PRIVILEGES;
+# If you need to login from external IP, do the two commented lines below
+# USE DATABASE zerojudge;
+# UPDATE appconfigs set manager_ip = '[0.0.0.0/0]';
+# UPDATE appconfigs set allowedIP = '[0.0.0.0/0]';
+exit;
+```
+* Note: You will likely change the above command. For example, you might want to specify the host of the user, or change the username and database name. Or you might want to use a container for MySQL. It doesn't mean you have to, but it's recommended.
 
 7. Pull the docker image and mount some volumes from the host for persistent storage and the configuration file:
 ```sh
-docker pull superjeng1/zerojudge:latest
+docker network create --subnet=<Subnet Example: 172.18.0.0/16> <Network Name>
+docker pull ghcr.io/superjeng1/zerojudge:latest
 docker run --name zerojudge \
   -v /container-zerojudge-data:/etc/zerojudge \
   -v /var/lib/lxc/lxc-ALL/:/var/lib/lxc/lxc-ALL/ \
   -e MY_SQL_PASSWORD='<MySql Password>' \
+  --net <Network Name> --ip <IP for this container within the subnet above Example: 172.18.0.2> \
   -d ghcr.io/superjeng1/zerojudge:latest
 ```
 * Note: Image is also available on Docker Hub, just replace GitHub Container Repository (ghcr.io) with docker.io to use that.
 * Note: Look down below to find image tags and environment variables.
 * Note: Make sure to put yourown MySql Settings in the quotes `''`. And make sure you don't leave the brackets `<>` in-place.
+* Note: Make sure to put yourown settings replacing all the place holders surrounded by `<>`. And make sure you don't leave the brackets `<>` in-place.
 * For REVERSE PROXY USERS: Add the environment varible `REVERSE_PROXY_IP` with `-e REVERSE_PROXY_IP='<REVERSE_PROXY_IP>'` to make sure tomcat grabs the correct client IP.
 
 8. Connect to your ZeroJudge with the container's IP and the port `8080`. To verify the container is working as intended, try to login with the default credentials listed below. Then go to the `Submissions` tab and re-run the submissions to make sure the judge is working properly.
