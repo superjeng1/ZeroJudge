@@ -6,6 +6,7 @@ name: Update Tomcat and base images
 on:
   workflow_dispatch:
   
+  pull_request:
   schedule:
     - cron: 0 16 * * *
 
