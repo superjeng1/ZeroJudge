@@ -82,10 +82,6 @@ mysql -u root -p
 <Enter Password>
 GRANT ALL ON zerojudge.* TO 'zerojudge'@'%';
 FLUSH PRIVILEGES;
-# If you need to login from external IP, do the two commented lines below
-# USE zerojudge;
-# UPDATE appconfigs set manager_ip = '[0.0.0.0/0]';
-# UPDATE appconfigs set allowedIP = '[0.0.0.0/0]';
 exit;
 ```
 * Note: You will likely change the above command. For example, you might want to specify the host of the user, or change the username and database name. Or you might want to use a container for MySQL. It doesn't mean you have to, but it's recommended.
@@ -104,7 +100,7 @@ sudo docker run --name zerojudge \
   -d ghcr.io/superjeng1/zerojudge:latest
 ```
 * Note: Image is also available on Docker Hub, just replace GitHub Container Repository (ghcr.io) with docker.io to use that.
-* Note: Look down below to find image tags and environment variables.
+* Note: Look down below to find more image variations and environment variables.
 * Note: Make sure to put yourown MySql Settings in the quotes `''`. And make sure you don't leave the brackets `<>` in-place.
 * Note: Make sure to put yourown local IP subnet (Ex: 172.18.0.0/16), subnet name (Ex: mynet), and IP within the subnet defined previously (Ex: 172.18.0.2, Don't use 172.18.0.1 in this case, the first IP is for the host) for docker And make sure you don't leave the brackets `<>` in-place.
 * For REVERSE PROXY USERS: Add the environment varible `REVERSE_PROXY_IP` with `-e REVERSE_PROXY_IP='<REVERSE_PROXY_IP>'` to make sure tomcat grabs the correct client IP. Also remove the port binding (`-p 80:8080`) in the `docker run` command above.
@@ -113,6 +109,14 @@ sudo docker run --name zerojudge \
 ```
 Account: zero
 Password: !@#$zerojudge
+```
+* Note: If you need to login from external network before setup, run the following command.
+```sh
+mysql -u root -p
+<Enter Password>
+USE zerojudge;
+UPDATE appconfigs set manager_ip = '[0.0.0.0/0]';
+UPDATE appconfigs set allowedIP = '[0.0.0.0/0]';
 ```
 
 ## Docker Image Variants (Tags)
