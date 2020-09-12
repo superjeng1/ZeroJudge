@@ -15,9 +15,9 @@ printf '%s %s\n%s\n' "INFO: Host IP automatically discovered is:" ${HOST_IP} "IN
 
 [ -z ${REVERSE_PROXY_IP+x} ] && { printf '%s\n' "INFO: Environment varible \"REVERSE_PROXY_IP\" is not yet set. Using an reverse proxy like nginx or apache could be helpful."; }
 
+rm -rf logs
 if [ -z ${TOMCAT_LOG_FILE_ENABLED+x} ] || [ ${TOMCAT_LOG_FILE_ENABLED} = "FALSE" ] || [ ${TOMCAT_LOG_FILE_ENABLED} = "false" ] || [ ${TOMCAT_LOG_FILE_ENABLED} = "NO" ] || [ ${TOMCAT_LOG_FILE_ENABLED} = "no" ]; then
   [ -z ${TOMCAT_LOG_FILE_ENABLED+x} ] && { printf '%s\n' "INFO: Environment varible \"TOMCAT_LOG_FILE_ENABLED\" is not set. Defaulting to \"FALSE\". Log files within the container is mostly not useful, if you really want log files, then set this to \"TRUE\". Set this to \"FALSE\" if you want to suppress this message."; }
-  rm -rf logs
   ln -s /dev/null logs
 else
   mkdir -p logs
