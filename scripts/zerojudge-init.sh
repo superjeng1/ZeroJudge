@@ -27,7 +27,7 @@ ssh-keyscan -H ${SSH_HOST} > ~/.ssh/known_hosts
 
 cat << EOF > /bin/lxc-attach
 $SHEBANG
-ssh $SSH_USER@$SSH_HOST sudo lxc-attach \$(printf "\\"%s\\" " "\$@")
+ssh -t $SSH_USER@$SSH_HOST sudo lxc-attach \$(printf "\\"%s\\" " "\$@")
 EOF
 
 
