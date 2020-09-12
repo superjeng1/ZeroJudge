@@ -9,42 +9,59 @@ Built image is available on [GitHub Container Repository](https://github.com/use
 
 ## Installation
 1. Download the lxc container from my Google Drive [here](https://drive.google.com/file/d/1UVMDmFYb12o8kzIQDFSzO6etXNUWSsHZ/view?usp=sharing).
-    * If you aren't comfortable downloading it from my drive and prefer to download from the orignal author himself, go to [his repository](https://github.com/jiangsir/ZeroJudge) and click on the link `請先下載 ZeroJudge虛擬機` then extract the `/var/lib/lxc/lxc-ALL/` folder within the virtual machine.
+```sh
+fileid="1UVMDmFYb12o8kzIQDFSzO6etXNUWSsHZ"
+filename="lxc-ALL.tar.gz"
+curl -c ./cookie -s -L "https://drive.google.com/uc?export=download&id=${fileid}" > /dev/null
+curl -Lb ./cookie "https://drive.google.com/uc?export=download&confirm=`awk '/download/ {print $NF}' ./cookie`&id=${fileid}" -o ${filename}
+```
+* Optional: If you aren't comfortable downloading it from my drive and prefer to download from the orignal author himself, go to [his repository](https://github.com/jiangsir/ZeroJudge) and click on the link `請先下載 ZeroJudge虛擬機` then extract the `/var/lib/lxc/lxc-ALL/` folder within the virtual machine.
 
 2. Install `lxc` on your system. 
-   * Ubuntu/Debian: `apt-get install lxc`
-   * CentOS: `yum -y install epel-release && yum -y install lxc`
-       * If your LXC version is older than 2.1, you might need to change some new configuration keys to legacy ones. You could verify this by running `lxc-attach --version`. If you discover the need of switching, check out this table [here](https://github.com/lxc/lxd/issues/4396#issuecomment-378322166) to change the keys from the new one to the old ones.
+   * Ubuntu/Debian: `sudo apt-get update && sudo apt-get install lxc`
+   * CentOS: `sudo yum -y install epel-release && yum -y install lxc`
+* If your LXC version is older than 2.1, likely for CentOS like users, you might need to change some new configuration keys to legacy ones. You could verify this by running `lxc-attach --version`. If you discover the need of switching, check out this table [here](https://github.com/lxc/lxd/issues/4396#issuecomment-378322166) to change the keys from the new one to the old ones.
+       
+3. Extract the archive from step 1 to `/var/lib/lxc/`. Then start the lxc service, also set the service to start on boot.
+```sh
+sudo tar -zxf lxc-ALL.tar.gz -C /var/lib/lxc/
+sudo systemctl start lxc
+sudo systemctl enable lxc
+```
 
-3. Create folders for persistent storage and configuration file. The directory doesn't have to be this, but make sure to use the same directory for the below steps.
+4. Create folders for persistent storage and configuration file. Clone this repository and place the `ZeroJudge_CONSOLE` folder and `configs/ServerConfig.xml` file to `/container-zerojudge-data/disk/ZeroJudge_CONSOLE` and `/container-zerojudge-data/configs/ServerConfig.xml` respectively. And then remove the git folder if you wish.
 ```sh
 mkdir /container-zerojudge-data
 mkdir /container-zerojudge-data/configs
 mkdir /container-zerojudge-data/disk
 mkdir /container-zerojudge-data/ssh
+git clone https://github.com/superjeng1/ZeroJudge.git
+mv ZeroJudge/ZeroJudge_CONSOLE /container-zerojudge-data/disk/
+mv ZeroJudge/configs/ServerConfig.xml /container-zerojudge-data/configs/
+rm -fr ZeroJudge
 ```
+* Note: The directory doesn't have to be this, but make sure to use the same directory for the below steps.
+* Note: The `ZeroJudge_CONSOLE` folder is for storing test-data for the challenges hosted on your site.
+* Note: The config file is for the judge itself, not the web interface.
 
-3. Do a `git clone https://github.com/superjeng1/ZeroJudge.git` and copy `ZeroJudge_CONSOLE` folder and `configs/ServerConfig.xml` file to `/container-zerojudge-data/disk/ZeroJudge_CONSOLE` and `/container-zerojudge-data/configs/ServerConfig.xml` respectively. And then remove the git folder if you wish.
-    * Note: This folder is for storing test-data for the challenges hosted on your site.
-    * Note: The config file is for the judge itself, not the web interface.
-
-4. Generate an SSH keypair for the container for it to control the lxc container on the host. Also mark the key authorised in the host.
+5. Create an user, Generate an SSH keypair, Mark the key authorised, Allow the user to use sudo for lxc-attach in the host for the container to SSH to the host and control the lxc container on the host.
 ```sh
+sudo useradd -r -s /bin/bash -m zerojudge
 ssh-keygen -f /container-zerojudge-data/ssh/id_rsa -t ecdsa -b 521 -q -N ""
-cat /container-zerojudge-data/ssh/id_rsa.pub >> ~/authorized_keys
+mkdir /home/zerojudge/.ssh
+cat /container-zerojudge-data/ssh/id_rsa.pub >> /home/zerojudge/.ssh/authorized_keys
+echo "zerojudge ALL=(root) NOPASSWD: $(which lxc-attach)" >> /etc/sudoers
 ```
-* **IMPORTANT: Take note of the current user that you are using, the second command below will permit the container to ssh into the host as the user. Also, the user must either be root, or able to sudo(Recommended).**
 
-5. Make sure the folders have the correct permissions respectively.
+6. Make sure the folders have the correct permissions respectively.
 ```sh
+sudo chown -R root:root /container-zerojudge-data/ssh
+chmod -R 700 /container-zerojudge-data/ssh
 chmod -R 770 /container-zerojudge-data/ZeroJudge_CONSOLE
 chmod -R 770 /container-zerojudge-data/configs
-chmod -R 700 /container-zerojudge-data/ssh
 ```
 
-6. Get the MySQL dumps from the author's repo [this](https://raw.githubusercontent.com/jiangsir/ZeroJudge/3.3/Schema_V3.0.sql) and [this](https://raw.githubusercontent.com/jiangsir/ZeroJudge/3.3/SchemaUpdate_V3.0.sql).
-
-7. Modify the second file:
+7. Get the MySQL dumps from the author's repo [this](https://raw.githubusercontent.com/jiangsir/ZeroJudge/3.3/Schema_V3.0.sql) and [this](https://raw.githubusercontent.com/jiangsir/ZeroJudge/3.3/SchemaUpdate_V3.0.sql). And modify the second file:
     * Line 3: Remove `DEFAULT ''` at near the end of the line
     * Line 4: Remove this line entirely.
 
@@ -72,7 +89,7 @@ exit;
 ```
 * Note: You will likely change the above command. For example, you might want to specify the host of the user, or change the username and database name. Or you might want to use a container for MySQL. It doesn't mean you have to, but it's recommended.
 
-7. Pull the docker image and mount some volumes from the host for persistent storage and the configuration file:
+9. Pull the docker image and mount some volumes from the host for persistent storage and the configuration file:
 ```sh
 docker network create --subnet=<Subnet Example: 172.18.0.0/16> <Network Name>
 docker pull ghcr.io/superjeng1/zerojudge:latest
@@ -89,7 +106,7 @@ docker run --name zerojudge \
 * Note: Make sure to put yourown settings replacing all the place holders surrounded by `<>`. And make sure you don't leave the brackets `<>` in-place.
 * For REVERSE PROXY USERS: Add the environment varible `REVERSE_PROXY_IP` with `-e REVERSE_PROXY_IP='<REVERSE_PROXY_IP>'` to make sure tomcat grabs the correct client IP.
 
-8. Connect to your ZeroJudge with the container's IP and the port `8080`. To verify the container is working as intended, try to login with the default credentials listed below. Then go to the `Submissions` tab and re-run the submissions to make sure the judge is working properly.
+10. Connect to your ZeroJudge with the container's IP and the port `8080`. You will need to login with the default credentials listed below and change the server port in `裁判機設定` here `http://<Your IP>/EditAppConfig`. Change `http://127.0.0.1/ZeroJudge_Server/` to `http://127.0.0.1:8080/ZeroJudge_Server/`. Then go to the `Problems` tab, navigate to the first and only problem, and click the `Solve It!` button, then copy and paste the example codes from http://example.com/UserGuide.jsp#Samplecode and see if it's working.
 ```
 Account: zero
 Password: !@#$zerojudge
