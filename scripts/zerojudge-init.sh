@@ -15,11 +15,19 @@ printf '%s %s\n%s\n' "INFO: Host IP automatically discovered is:" ${HOST_IP} "IN
 
 [ -z ${REVERSE_PROXY_IP+x} ] && { printf '%s\n' "INFO: Environment varible \"REVERSE_PROXY_IP\" is not yet set. Using an reverse proxy like nginx or apache could be helpful."; }
 
+if [ -z ${TOMCAT_LOG_FILE_ENABLED+x} ] || [ ${TOMCAT_LOG_FILE_ENABLED} = "FALSE" ] || [ ${TOMCAT_LOG_FILE_ENABLED} = "false" ] || [ ${TOMCAT_LOG_FILE_ENABLED} = "NO" ] || [ ${TOMCAT_LOG_FILE_ENABLED} = "no" ]; then
+  [ -z ${TOMCAT_LOG_FILE_ENABLED+x} ] && { printf '%s\n' "INFO: Environment varible \"TOMCAT_LOG_FILE_ENABLED\" is not set. Defaulting to \"FALSE\". Log files within the container is mostly not useful, if you really want log files, then set this to \"TRUE\". Set this to \"FALSE\" if you want to suppress this message."; }
+  rm -rf logs
+  ln -s /dev/null logs
+else
+  mkdir -p logs
+fi
+
 if [ -z ${TOMCAT_SSL_ENABLED+x} ] || [ ${TOMCAT_SSL_ENABLED} = "FALSE" ] || [ ${TOMCAT_SSL_ENABLED} = "false" ] || [ ${TOMCAT_SSL_ENABLED} = "NO" ] || [ ${TOMCAT_SSL_ENABLED} = "no" ]; then
   [ -z ${TOMCAT_SSL_ENABLED+x} ] && { printf '%s\n' "INFO: Environment varible \"TOMCAT_SSL_ENABLED\" is not set. Defaulting to \"FALSE\". If you are using an reverse proxy with SSL and correct redirect HTTP to HTTPS settings, then set this to \"FALSE\" if you want to suppress this message."; }
-  cp -f /usr/local/tomcat/webapps/ROOT/WEB-INF/web_http.xml /usr/local/tomcat/webapps/ROOT/WEB-INF/web.xml
+  cp -f webapps/ROOT/WEB-INF/web_http.xml webapps/ROOT/WEB-INF/web.xml
 else
-  cp -f /usr/local/tomcat/webapps/ROOT/WEB-INF/web_https.xml /usr/local/tomcat/webapps/ROOT/WEB-INF/web.xml
+  cp -f webapps/ROOT/WEB-INF/web_https.xml webapps/ROOT/WEB-INF/web.xml
 fi
 
 
@@ -31,7 +39,7 @@ ssh -t $SSH_USER@$SSH_HOST sudo lxc-attach \$(printf "\\"%s\\" " "\$@")
 EOF
 
 
-cat << EOF > /usr/local/tomcat/webapps/ROOT/META-INF/context.xml
+cat << EOF > webapps/ROOT/META-INF/context.xml
 <?xml version="1.0" encoding="utf-8"?>
 <Context docBase="ZeroJudge">
 	<!-- <Valve className="org.apache.catalina.valves.RemoteAddrValve" allow="*" deny="192.168.22.33" /> -->
@@ -43,45 +51,45 @@ cat << EOF > /usr/local/tomcat/webapps/ROOT/META-INF/context.xml
 EOF
 
 if [ ! -z ${REVERSE_PROXY_IP+x} ]; then
-cat << EOF >> /usr/local/tomcat/webapps/ROOT/META-INF/context.xml
+cat << EOF >> webapps/ROOT/META-INF/context.xml
     <Valve className="org.apache.catalina.valves.RemoteIpValve" internalProxies="$(printf '%s' "${REVERSE_PROXY_IP//./\\.}")" remoteIpHeader="x-forwarded-for" proxiesHeader="x-forwarded-by" trustedProxies="$REVERSE_PROXY_IP" />
 EOF
 fi
 
-cat << EOF >> /usr/local/tomcat/webapps/ROOT/META-INF/context.xml
+cat << EOF >> webapps/ROOT/META-INF/context.xml
 	<!-- session 持久化，存入檔案 -->
 	<!-- <Manager className="org.apache.catalina.session.PersistentManager" saveOnRestart="true"><Store className="org.apache.catalina.session.FileStore" /></Manager> -->
 </Context>
 EOF
 
 
-cat << EOF > /usr/local/tomcat/webapps/ZeroJudge_Server/META-INF/context.xml
+cat << EOF > webapps/ZeroJudge_Server/META-INF/context.xml
 <?xml version="1.0" encoding="UTF-8"?>
 <Context docBase="ZeroJudge_Server">
 	<!-- <Valve className="org.apache.catalina.valves.RemoteAddrValve" allow="127.0.0.1|163.32.92.12|163.32.92.3" /> -->
 EOF
 
 if [ ! -z ${REVERSE_PROXY_IP+x} ]; then
-cat << EOF >> /usr/local/tomcat/webapps/ZeroJudge_Server/META-INF/context.xml
+cat << EOF >> webapps/ZeroJudge_Server/META-INF/context.xml
     <Valve className="org.apache.catalina.valves.RemoteIpValve" internalProxies="$(printf '%s' "${REVERSE_PROXY_IP//./\\.}")" remoteIpHeader="x-forwarded-for" proxiesHeader="x-forwarded-by" trustedProxies="$REVERSE_PROXY_IP" />
 EOF
 fi
 
-cat << EOF >> /usr/local/tomcat/webapps/ZeroJudge_Server/META-INF/context.xml
+cat << EOF >> webapps/ZeroJudge_Server/META-INF/context.xml
 </Context>
 EOF
 
 
 chmod 755 /bin/lxc-attach
 
-echo > /usr/local/tomcat/webapps/ROOT/InitializedListener.py
+echo > webapps/ROOT/InitializedListener.py
 chown -R zero:zero /etc/zerojudge/disk/ZeroJudge_CONSOLE
 chmod -R 770 /etc/zerojudge/disk/ZeroJudge_CONSOLE
 
 
-echo > /usr/local/tomcat/webapps/ZeroJudge_Server/InitializedListener.py
+echo > webapps/ZeroJudge_Server/InitializedListener.py
 chown -R zero:zero /JudgeServer_CONSOLE
 chmod -R 770 /JudgeServer_CONSOLE
 
 
-exec /usr/local/tomcat/bin/catalina.sh run
+exec catalina.sh run
