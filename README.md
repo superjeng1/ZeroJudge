@@ -163,6 +163,9 @@ This variable specifies the host's IP relative to the container. If not set, the
 ### `REVERSE_PROXY_IP`
 This variable specifies the IP of reverse proxy relative to the container, and has no defaults.
 
+### `TOMCAT_LOG_FILE_ENABLED`
+Logfiles in containers aren't all that useful, and no logfiles can keep the container small, so this defaults to `FALSE`. With this option `FALSE`, the `logs` folder will be symblinked to `/dev/null` achieving no logfiles.
+
 ### `TOMCAT_SSL_ENABLED`
 This variable tells tomcat whether to use SSL. If you use reverse proxy, you might not need this. This defaults to `FALSE`.
 
