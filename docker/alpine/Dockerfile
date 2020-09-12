@@ -1,5 +1,5 @@
 FROM docker.io/tomcat@sha256:3deb87b03dc204c2802cdd47f6eb587827860e54d30fcac02ada6bf9e51614d6 AS builder
-# The above is checksum of docker.io/tomcat:9-jdk8-openjdk-slim
+# The above is checksum of docker.io/tomcat:9-jdk8-openjdk-slim and will be automatically updated by GitHub actions
 
 RUN apt-get update && \
     mkdir -p /usr/share/man/man1 && \
@@ -22,7 +22,7 @@ RUN apt-get update && \
 
 
 FROM docker.io/alpine@sha256:185518070891758909c9f839cf4ca393ee977ac378609f700f60a771a2dfe321 AS deployer
-# The above is checksum of docker.io/alpine:latest
+# The above is checksum of docker.io/alpine:latest and will be automatically updated by GitHub actions
 
 ENV TOMCAT_MAJOR=9 \
     TOMCAT_VERSION=9.0.37 \
@@ -82,7 +82,7 @@ RUN mkdir -p "$CATALINA_HOME" && \
 
 
 FROM docker.io/alpine@sha256:185518070891758909c9f839cf4ca393ee977ac378609f700f60a771a2dfe321
-# The above is checksum of docker.io/alpine:latest
+# The above is checksum of docker.io/alpine:latest and will be automatically updated by GitHub actions
 
 ENV TOMCAT_MAJOR=9 \
     TOMCAT_VERSION=9.0.37 \

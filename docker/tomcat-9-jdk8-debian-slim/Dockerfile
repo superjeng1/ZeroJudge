@@ -1,5 +1,5 @@
 FROM docker.io/tomcat@sha256:3deb87b03dc204c2802cdd47f6eb587827860e54d30fcac02ada6bf9e51614d6 AS builder
-# The above is checksum of docker.io/tomcat:9-jdk8-openjdk-slim
+# The above is checksum of docker.io/tomcat:9-jdk8-openjdk-slim and will be automatically updated by GitHub actions
 
 RUN apt-get update && \
     mkdir -p /usr/share/man/man1 && \
@@ -22,7 +22,7 @@ RUN apt-get update && \
 
 
 FROM docker.io/tomcat@sha256:3deb87b03dc204c2802cdd47f6eb587827860e54d30fcac02ada6bf9e51614d6 AS deployer
-# The above is checksum of docker.io/tomcat:9-jdk8-openjdk-slim
+# The above is checksum of docker.io/tomcat:9-jdk8-openjdk-slim and will be automatically updated by GitHub actions
 
 ENV SHEBANG="#!/bin/bash"
 
@@ -43,7 +43,7 @@ RUN apt-get update && \
 
 
 FROM docker.io/tomcat@sha256:3deb87b03dc204c2802cdd47f6eb587827860e54d30fcac02ada6bf9e51614d6
-# The above is checksum of docker.io/tomcat:9-jdk8-openjdk-slim
+# The above is checksum of docker.io/tomcat:9-jdk8-openjdk-slim and will be automatically updated by GitHub actions
 
 COPY --from=deployer /usr/local/tomcat /usr/local/tomcat
 COPY --from=builder /JudgeServer_CONSOLE /JudgeServer_CONSOLE
