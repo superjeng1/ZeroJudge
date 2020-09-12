@@ -92,22 +92,24 @@ exit;
 
 9. Pull the docker image and mount some volumes from the host for persistent storage and the configuration file:
 ```sh
-sudo docker network create --subnet=<Subnet Example: 172.18.0.0/16> <Network Name>
+sudo docker network create --subnet=<Subnet> <Network-Name>
 sudo docker pull ghcr.io/superjeng1/zerojudge:latest
 sudo docker run --name zerojudge \
   -v /container-zerojudge-data:/etc/zerojudge \
   -v /var/lib/lxc/lxc-ALL/:/var/lib/lxc/lxc-ALL/ \
   -e MY_SQL_PASSWORD='<MySql Password>' \
-  --net <Network Name> --ip <IP for this container within the subnet above Example: 172.18.0.2> \
+  -e SSH_USER='zerojudge' \
+  --net <Network-Name> --ip <IP> \
+  -p 80:8080 \
   -d ghcr.io/superjeng1/zerojudge:latest
 ```
 * Note: Image is also available on Docker Hub, just replace GitHub Container Repository (ghcr.io) with docker.io to use that.
 * Note: Look down below to find image tags and environment variables.
 * Note: Make sure to put yourown MySql Settings in the quotes `''`. And make sure you don't leave the brackets `<>` in-place.
-* Note: Make sure to put yourown settings replacing all the place holders surrounded by `<>`. And make sure you don't leave the brackets `<>` in-place.
-* For REVERSE PROXY USERS: Add the environment varible `REVERSE_PROXY_IP` with `-e REVERSE_PROXY_IP='<REVERSE_PROXY_IP>'` to make sure tomcat grabs the correct client IP.
+* Note: Make sure to put yourown local IP subnet (Ex: 172.18.0.0/16), subnet name (Ex: mynet), and IP within the subnet defined previously (Ex: 172.18.0.2, Don't use 172.18.0.1 in this case, the first IP is for the host) for docker And make sure you don't leave the brackets `<>` in-place.
+* For REVERSE PROXY USERS: Add the environment varible `REVERSE_PROXY_IP` with `-e REVERSE_PROXY_IP='<REVERSE_PROXY_IP>'` to make sure tomcat grabs the correct client IP. Also remove the port binding (`-p 80:8080`) in the `docker run` command above.
 
-10. Connect to your ZeroJudge with the container's IP and the port `8080`. You will need to login with the default credentials listed below and change the server port in `裁判機設定` here `http://<Your IP>/EditAppConfig`. Change `http://127.0.0.1/ZeroJudge_Server/` to `http://127.0.0.1:8080/ZeroJudge_Server/`. Then go to the `Problems` tab, navigate to the first and only problem, and click the `Solve It!` button, then copy and paste the example codes from http://example.com/UserGuide.jsp#Samplecode and see if it's working.
+10. Connect to your ZeroJudge with the container's IP. You will need to login with the default credentials listed below and change the server port in `裁判機設定` here `http://<Your IP>/EditAppConfig`. Change `http://127.0.0.1/ZeroJudge_Server/` to `http://127.0.0.1:8080/ZeroJudge_Server/`. Then go to the `Problems` tab, navigate to the first and only problem, and click the `Solve It!` button, then copy and paste the example codes from `http://<Your IP>/UserGuide.jsp#Samplecode` and see if it's working.
 ```
 Account: zero
 Password: !@#$zerojudge
