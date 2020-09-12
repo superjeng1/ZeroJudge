@@ -120,6 +120,18 @@ This is an image based on debian slim, and this should be kept stable every vers
 ### `zerojudge:latest-alpine`
 This is an image based on alpine linux. This should be a way smaller image than latest since the base image size is way smaller (Alpine linux image comes in only 5 MB!). And like `zerojudge:latest` this should be kept stable every version. Just make sure you do `docker pull` before `docker run` to ensure docker pulls the newest avalible image.
 
+### `zerojudge:testing`
+This is built directly from the `main` branch. It should be stable most of the times.
+
+### `zerojudge:testing-alpine`
+Same as above, but uses Alpine Linux as base image.
+
+### `zerojudge:<tag>`
+Use the tagged releases on GitHub. Should all be reasonably stable.
+
+### `zerojudge:<tag>-alpine`
+Same as above, but uses Alpine Linux as base image.
+
 ## Environment Variables
 ### `MY_SQL_PASSWORD`
 This variable is **mandatory** and specifies the password that will be used to connect to the MySQL instance.
