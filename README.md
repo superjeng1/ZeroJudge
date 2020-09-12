@@ -8,7 +8,7 @@ Built image is available on [GitHub Container Repository](https://github.com/use
 中文說明尚未完成 (Chinese Version of this readme is still in the works)
 
 ## Installation
-1. Download the lxc container from my Google Drive [here](https://drive.google.com/file/d/1UVMDmFYb12o8kzIQDFSzO6etXNUWSsHZ/view?usp=sharing).
+1. Download the lxc container from my Google Drive [here](https://drive.google.com/file/d/1UVMDmFYb12o8kzIQDFSzO6etXNUWSsHZ/view?usp=sharing). To use the command line to download, use the below commands.
 ```sh
 fileid="1UVMDmFYb12o8kzIQDFSzO6etXNUWSsHZ"
 filename="lxc-ALL.tar.gz"
