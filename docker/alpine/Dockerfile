@@ -25,8 +25,8 @@ FROM docker.io/alpine@sha256:185518070891758909c9f839cf4ca393ee977ac378609f700f6
 # The above is checksum of docker.io/alpine:latest and will be automatically updated by GitHub actions
 
 ENV TOMCAT_MAJOR=9 \
-    TOMCAT_VERSION=9.0.38 \
-    TOMCAT_SHA512=37117164c9ab985b4f3032deac9617cee01463f8822586a62a9c498d2720fac23a8207fcf7a76cea2fcb3c6f828ff12b7b31422316a7d92e707c3bd8d687e303 \
+    TOMCAT_VERSION=9.0.39 \
+    TOMCAT_SHA512=307ca646bac267e529fb0862278f7133fe80813f0af64a44aed949f4c7a9a98aeb9bd7f08b087645b40c6fefdd3a7fe519e4858a3dbf0a19c38c53704f92b575 \
     GPG_KEY_FILE_SHA512=f333a7bc1a1ef6762f0b9193d1e3e669d7628ee1613b884200b4e9a091eb813c8c4eb9491f13580c14df1a1ecba94b2a1c0b98ed35a7302c6fb800390906a19f \
     # The checksum in the above line is a SHA512 checksum of this file: https://www.apache.org/dist/tomcat/tomcat-$TOMCAT_MAJOR/KEYS
     CATALINA_HOME=/usr/local/tomcat \
@@ -85,8 +85,8 @@ FROM docker.io/alpine@sha256:185518070891758909c9f839cf4ca393ee977ac378609f700f6
 # The above is checksum of docker.io/alpine:latest and will be automatically updated by GitHub actions
 
 ENV TOMCAT_MAJOR=9 \
-    TOMCAT_VERSION=9.0.38 \
-    TOMCAT_SHA512=37117164c9ab985b4f3032deac9617cee01463f8822586a62a9c498d2720fac23a8207fcf7a76cea2fcb3c6f828ff12b7b31422316a7d92e707c3bd8d687e303 \
+    TOMCAT_VERSION=9.0.39 \
+    TOMCAT_SHA512=307ca646bac267e529fb0862278f7133fe80813f0af64a44aed949f4c7a9a98aeb9bd7f08b087645b40c6fefdd3a7fe519e4858a3dbf0a19c38c53704f92b575 \
     GPG_KEY_FILE_SHA512=f333a7bc1a1ef6762f0b9193d1e3e669d7628ee1613b884200b4e9a091eb813c8c4eb9491f13580c14df1a1ecba94b2a1c0b98ed35a7302c6fb800390906a19f \
     # The checksum in the above line is a SHA512 checksum of this file: https://www.apache.org/dist/tomcat/tomcat-$TOMCAT_MAJOR/KEYS
     CATALINA_HOME=/usr/local/tomcat \
