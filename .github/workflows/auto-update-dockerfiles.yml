@@ -34,15 +34,15 @@ jobs:
       - name: Check Latest docker.io/alpine:latest sha256 checksum
         run: |
           alpineImageName=$(docker pull docker.io/alpine:latest | sed -n 's/^Digest: /docker.io\\\/alpine\\@/p')
-          perl -i -pe 's/^(FROM) docker.io\/alpine:[^ \n]+/\1 '"$alpineImageName"'/gm' docker/alpine/Dockerfile
+          perl -i -pe 's/^(FROM) docker.io\/alpine@[^ \n]+/\1 '"$alpineImageName"'/gm' docker/alpine/Dockerfile
           git add -u
           git diff-index --quiet HEAD && echo "No update available for now. Exiting..." || { git commit -S -m "Updated Alpine image"; }
       
       - name: Check Latest docker.io/tomcat:9-jdk8-openjdk-slim sha256 checksum
         run: |
           tomcatImageName=$(docker pull docker.io/tomcat:9-jdk8-openjdk-slim | sed -n 's/^Digest: /docker.io\\\/tomcat\\@/p')
-          perl -i -pe 's/^(FROM) docker.io\/tomcat:[^ \n]+/\1 '"$tomcatImageName"'/gm' docker/tomcat-9-jdk8-debian-slim/Dockerfile
-          perl -i -pe 's/^(FROM) docker.io\/tomcat:[^ \n]+/\1 '"$tomcatImageName"'/gm' docker/alpine/Dockerfile
+          perl -i -pe 's/^(FROM) docker.io\/tomcat@[^ \n]+/\1 '"$tomcatImageName"'/gm' docker/tomcat-9-jdk8-debian-slim/Dockerfile
+          perl -i -pe 's/^(FROM) docker.io\/tomcat@[^ \n]+/\1 '"$tomcatImageName"'/gm' docker/alpine/Dockerfile
           git add -u
           git diff-index --quiet HEAD && echo "No update available for now. Exiting..." || { git commit -S -m "Updated Tomcat image"; }
 
