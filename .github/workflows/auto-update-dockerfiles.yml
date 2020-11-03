@@ -33,8 +33,8 @@ jobs:
       
       - name: Check Latest docker.io/alpine:latest sha256 checksum
         run: |
-          docker pull docker.io/alpine:latest
           alpineImageName=$(docker pull docker.io/alpine:latest | sed -n 's/^Digest: /docker.io\\\/alpine\\@/p')
+          echo $alpineImageName
           perl -i -pe 's/^(FROM) docker.io\/alpine:[^ \n]+/\1 '"$alpineImageName"'/gm' docker/alpine/Dockerfile
           git add -u
           git diff-index --quiet HEAD && echo "No update available for now. Exiting..." || { git commit -S -m "Updated Alpine image"; }
