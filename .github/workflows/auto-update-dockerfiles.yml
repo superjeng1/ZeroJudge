@@ -33,6 +33,7 @@ jobs:
       
       - name: Check Latest docker.io/alpine:latest sha256 checksum
         run: |
+          docker pull docker.io/alpine:latest
           alpineImageName=$(docker pull docker.io/alpine:latest | sed -n 's/^Digest: /docker.io\\\/alpine\\@/p')
           perl -i -pe 's/^(FROM) docker.io\/alpine:[^ \n]+/\1 '"$alpineImageName"'/gm' docker/alpine/Dockerfile
           git add -u
