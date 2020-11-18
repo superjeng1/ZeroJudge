@@ -24,7 +24,7 @@ jobs:
           # Strip git ref prefix from version
           VERSION=$(echo "pr-${{ github.head_ref}}" | sed -e 's,.*/\(.*\),\1,')
           
-          echo "::set-env name=VERSION::$VERSION"
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
           docker build . --file docker/tomcat-9-jdk8-debian-slim/Dockerfile --tag $IMAGE_NAME:$VERSION
 
       - name: Log into GitHub Container Registry
@@ -80,7 +80,7 @@ jobs:
           # Strip git ref prefix from version
           VERSION=$(echo "pr-${{ github.head_ref}}" | sed -e 's,.*/\(.*\),\1,')
           
-          echo "::set-env name=VERSION::$VERSION"
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
           docker build . --file docker/alpine/Dockerfile --tag $IMAGE_NAME:$VERSION-alpine
 
       - name: Log into GitHub Container Registry

@@ -36,7 +36,7 @@ jobs:
           # Use Docker `testing` tag convention
           [ "$VERSION" == "main" ] && VERSION=testing
           
-          echo "::set-env name=VERSION::$VERSION"
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
           docker build . --file docker/tomcat-9-jdk8-debian-slim/Dockerfile --tag $IMAGE_NAME:$VERSION
 
       - name: Log into GitHub Container Registry
@@ -99,7 +99,7 @@ jobs:
           # Use Docker `testing-alpine` tag convention
           [ "$VERSION" == "main" ] && VERSION=testing
           
-          echo "::set-env name=VERSION::$VERSION"
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
           docker build . --file docker/alpine/Dockerfile --tag $IMAGE_NAME:$VERSION-alpine
 
       - name: Log into GitHub Container Registry
