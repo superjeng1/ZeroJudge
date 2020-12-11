@@ -1,4 +1,4 @@
-FROM docker.io/tomcat@sha256:bb9c82fc68f1ffebf7f644b0edbb62538a2a60c34618de88a0e606a31b9ab8d0 AS builder
+FROM docker.io/tomcat@sha256:3b3b7703acf1450eafe5652a963c0e2d8349992953fa7e0404abb7e872b82259 AS builder
 # The above is checksum of docker.io/tomcat:9-jdk8-openjdk-slim and will be automatically updated by GitHub actions
 
 RUN apt-get update && \
