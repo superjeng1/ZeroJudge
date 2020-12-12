@@ -1,4 +1,4 @@
-FROM docker.io/tomcat@sha256:3b3b7703acf1450eafe5652a963c0e2d8349992953fa7e0404abb7e872b82259 AS builder
+FROM docker.io/tomcat@sha256:a182bfc6a2663a4f79e922beed5746089680cc91b9390f79fa623f8c0d2fa2c0 AS builder
 # The above is checksum of docker.io/tomcat:9-jdk8-openjdk-slim and will be automatically updated by GitHub actions
 
 RUN apt-get update && \
@@ -21,7 +21,7 @@ RUN apt-get update && \
     mv /build/ZeroJudge_Server/ZeroJudge_Server.war /build/wars
 
 
-FROM docker.io/tomcat@sha256:3b3b7703acf1450eafe5652a963c0e2d8349992953fa7e0404abb7e872b82259 AS deployer
+FROM docker.io/tomcat@sha256:a182bfc6a2663a4f79e922beed5746089680cc91b9390f79fa623f8c0d2fa2c0 AS deployer
 # The above is checksum of docker.io/tomcat:9-jdk8-openjdk-slim and will be automatically updated by GitHub actions
 
 ENV SHEBANG="#!/bin/bash"
@@ -42,7 +42,7 @@ RUN apt-get update && \
     tail +3 /tmp/zerojudge-init.sh >> /usr/local/tomcat/bin/zerojudge-init.sh
 
 
-FROM docker.io/tomcat@sha256:3b3b7703acf1450eafe5652a963c0e2d8349992953fa7e0404abb7e872b82259
+FROM docker.io/tomcat@sha256:a182bfc6a2663a4f79e922beed5746089680cc91b9390f79fa623f8c0d2fa2c0
 # The above is checksum of docker.io/tomcat:9-jdk8-openjdk-slim and will be automatically updated by GitHub actions
 
 COPY --from=deployer /usr/local/tomcat /usr/local/tomcat
