@@ -21,7 +21,7 @@ RUN apt-get update && \
     mv /build/ZeroJudge_Server/ZeroJudge_Server.war /build/wars
 
 
-FROM docker.io/alpine@sha256:ec14c7992a97fc11425907e908340c6c3d6ff602f5f13d899e6b7027c9b4133a AS deployer
+FROM docker.io/alpine@sha256:69e70a79f2d41ab5d637de98c1e0b055206ba40a8145e7bddb55ccc04e13cf8f AS deployer
 # The above is checksum of docker.io/alpine:latest and will be automatically updated by GitHub actions
 
 ENV TOMCAT_MAJOR=9 \
@@ -81,7 +81,7 @@ RUN mkdir -p "$CATALINA_HOME" && \
     rm webapps/*.war
 
 
-FROM docker.io/alpine@sha256:ec14c7992a97fc11425907e908340c6c3d6ff602f5f13d899e6b7027c9b4133a
+FROM docker.io/alpine@sha256:69e70a79f2d41ab5d637de98c1e0b055206ba40a8145e7bddb55ccc04e13cf8f
 # The above is checksum of docker.io/alpine:latest and will be automatically updated by GitHub actions
 
 ENV TOMCAT_MAJOR=9 \
